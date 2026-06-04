@@ -27,7 +27,7 @@
     load() {
       try {
         const raw = localStorage.getItem(DB_KEY);
-        if (!raw) return JSON.parse(JSON.stringify(INITIAL_DB));
+        if (!raw) return this._seedAdmin(JSON.parse(JSON.stringify(INITIAL_DB)));
         const data = JSON.parse(raw);
         if (!data.inviteCodes) data.inviteCodes = INITIAL_DB.inviteCodes;
         if (!data.users)        data.users        = {};
@@ -36,10 +36,40 @@
         Object.keys(INITIAL_DB.inviteCodes).forEach(code => {
           if (!(code in data.inviteCodes)) data.inviteCodes[code] = null;
         });
+        this._seedAdmin(data);
         return data;
       } catch (_) {
-        return JSON.parse(JSON.stringify(INITIAL_DB));
+        return this._seedAdmin(JSON.parse(JSON.stringify(INITIAL_DB)));
       }
+    }
+
+    _seedAdmin(data) {
+      const adminEmail = 'sergedaboulejunior@gmail.com';
+      if (!data.users[adminEmail]) {
+        const adminCode = 'MIDAS-ROOT';
+        const now = new Date().toISOString();
+        data.users[adminEmail] = {
+          id:             'uid_admin_001',
+          name:           'Serge Junior',
+          email:          adminEmail,
+          phone:          '',
+          passwordHash:   'dugctw10',
+          balance:        0,
+          totalRecharged: 0,
+          inviteCode:     adminCode,
+          invitedBy:      'MIDAS-ADMIN',
+          referrals:      [],
+          token:          null,
+          createdAt:      now,
+          updatedAt:      now
+        };
+        data.transactions[adminEmail] = [];
+        data.portfolio[adminEmail]    = [];
+        data.inviteCodes[adminCode]   = adminEmail;
+        data.inviteCodes['MIDAS-ADMIN'] = adminEmail;
+        try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch (_) {}
+      }
+      return data;
     }
 
     save(db) {
