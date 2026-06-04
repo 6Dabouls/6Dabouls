@@ -1,0 +1,17 @@
+# Claude Code internal directory
+.claude/
+
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
