@@ -30,6 +30,10 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+            <Link href="/carte-visa" className="flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+              Carte Visa
+              <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full">Gratuit</span>
+            </Link>
           </div>
 
           <div className="hidden md:flex">
@@ -52,6 +56,10 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+            <Link href="/carte-visa" className="flex items-center gap-2 text-sm font-medium text-indigo-600 py-2 hover:text-indigo-700" onClick={() => setIsOpen(false)}>
+              Carte Visa Gratuite
+              <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full">Gratuit</span>
+            </Link>
             <Link href="/booking" className="mt-2 px-4 py-3 bg-indigo-600 text-white text-sm font-semibold rounded-xl text-center" onClick={() => setIsOpen(false)}>
               Réserver un appel gratuit
             </Link>

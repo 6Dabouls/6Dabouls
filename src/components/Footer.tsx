@@ -47,7 +47,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Liens</h4>
             <ul className="space-y-2">
-              {[['#portfolio', 'Portfolio'], ['#tarifs', 'Tarifs'], ['#about', 'À propos'], ['/booking', 'Réserver']].map(([href, label]) => (
+              {[['#portfolio', 'Portfolio'], ['#tarifs', 'Tarifs'], ['#about', 'À propos'], ['/booking', 'Réserver'], ['/carte-visa', 'Carte Visa Prépayée']].map(([href, label]) => (
                 <li key={label}>
                   <Link href={href} className="text-slate-400 hover:text-white transition-colors text-sm">{label}</Link>
                 </li>

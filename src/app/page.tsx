@@ -8,6 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import Pricing from '@/components/Pricing';
 import FAQ from '@/components/FAQ';
 import CallToAction from '@/components/CallToAction';
+import VisaCardBanner from '@/components/VisaCardBanner';
 import Footer from '@/components/Footer';
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
       <Pricing />
       <FAQ />
       <CallToAction />
+      <VisaCardBanner />
       <Footer />
     </main>
   );
