@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gold Core</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- ═══════════════════ HOME PAGE ═══════════════════ -->
+  <div id="page-home" class="page active">
+    <header class="app-header">
+      <button class="header-icon-btn"><i class="fa fa-bell"></i></button>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">GC</div>
+        <span class="header-brand">GOLD CORE</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <div class="investment-ticker">
+      <span class="ticker-icon">💰</span>
+      <span class="ticker-text">Précieux: Plan d'investissement mensuel en or Gold</span>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-item" onclick="openModal('recharge')">
+        <div class="action-icon-wrap recharge"><i class="fa fa-plus"></i></div>
+        <span>Recharger</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon-wrap app"><i class="fa fa-mobile-screen"></i></div>
+        <span>Application</span>
+      </div>
+      <div class="action-item" onclick="openModal('retrait')">
+        <div class="action-icon-wrap retrait"><i class="fa fa-arrow-down"></i></div>
+        <span>Retirer</span>
+      </div>
+      <div class="action-item">
+        <div class="action-icon-wrap profil"><i class="fa fa-building"></i></div>
+        <span>Profil de<br>l'entreprise</span>
+      </div>
+    </div>
+
+    <div class="mine-hero">
+      <div class="mine-hero-content">
+        <span class="mine-hero-label">Gold Core Mining</span>
+        <span class="mine-hero-sub">Investissez dans l'or</span>
+      </div>
+      <div class="mine-hero-overlay"></div>
+    </div>
+
+    <div class="section-title">Salle de projets</div>
+
+    <div class="project-list">
+      <div class="project-card" onclick="showPage('project')">
+        <div class="project-thumb mine-thumb-1">
+          <span class="thumb-badge">PO No.1</span>
+        </div>
+        <div class="project-body">
+          <div class="project-benefit">
+            <span class="benefit-label">XAF</span>
+            <span class="benefit-amount">1 100</span>
+            <span class="benefit-desc">Bénéfice quotidien</span>
+          </div>
+          <div class="project-price-row">
+            <span class="project-price-label">Prix</span>
+            <span class="project-price">XAF 10 000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" onclick="showPage('project')">
+        <div class="project-thumb mine-thumb-2">
+          <span class="thumb-badge">PO No.2</span>
+        </div>
+        <div class="project-body">
+          <div class="project-benefit">
+            <span class="benefit-label">XAF</span>
+            <span class="benefit-amount">4 000</span>
+            <span class="benefit-desc">Bénéfice quotidien</span>
+          </div>
+          <div class="project-price-row">
+            <span class="project-price-label">Prix</span>
+            <span class="project-price">XAF 32 000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PROJECT PAGE ═══════════════════ -->
+  <div id="page-project" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">GC</div>
+        <span class="header-brand">GOLD CORE</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <div class="page-tab-bar">
+      <button class="tab-btn active" id="tab-achat" onclick="switchProjectTab('achat')">Historique d'achat</button>
+      <button class="tab-btn" id="tab-plans" onclick="switchProjectTab('plans')">Plans</button>
+    </div>
+
+    <div id="panel-achat" class="tab-panel active">
+      <div class="empty-state">
+        <i class="fa fa-box-open"></i>
+        <p>Aucun achat pour le moment</p>
+        <button class="cta-btn" onclick="switchProjectTab('plans')">Voir les plans</button>
+      </div>
+    </div>
+
+    <div id="panel-plans" class="tab-panel po-list">
+
+      <!-- PO No.1 -->
+      <div class="po-card">
+        <div class="po-hero mine-thumb-1">
+          <span class="po-hero-badge">PO No.1</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">1 100 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">1</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">10 000 XAF</span>
+            <button class="buy-btn" onclick="openModal('buy', 'PO No.1', '10 000')">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PO No.2 -->
+      <div class="po-card">
+        <div class="po-hero mine-thumb-2">
+          <span class="po-hero-badge">PO No.2</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">4 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">32 000 ~ 9M XAF</span>
+            <button class="buy-btn" onclick="openModal('buy', 'PO No.2', '32 000')">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PO No.3 -->
+      <div class="po-card">
+        <div class="po-hero mine-thumb-3">
+          <span class="po-hero-badge">PO No.3</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">13 996 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">100 000+ XAF</span>
+            <button class="buy-btn" onclick="openModal('buy', 'PO No.3', '100 000')">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PO No.4 -->
+      <div class="po-card">
+        <div class="po-hero mine-thumb-4">
+          <span class="po-hero-badge">PO No.4</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">55 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">500 000+ XAF</span>
+            <button class="buy-btn" onclick="openModal('buy', 'PO No.4', '500 000')">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TEAM PAGE ═══════════════════ -->
+  <div id="page-team" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">GC</div>
+        <span class="header-brand">GOLD CORE</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <button class="period-bar">
+      Période de sélection <i class="fa fa-chevron-down fa-xs"></i>
+    </button>
+
+    <div class="team-stats-grid">
+      <div class="team-stat-box">
+        <span class="team-stat-label">Taille de l'équipe</span>
+        <span class="team-stat-val">0</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Recharge d'équipe</span>
+        <span class="team-stat-val">XAF0</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Nouvelle équipe</span>
+        <span class="team-stat-val">0</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Première recharge</span>
+        <span class="team-stat-val">0</span>
+      </div>
+      <div class="team-stat-box team-stat-full">
+        <span class="team-stat-label">Premier retrait</span>
+        <span class="team-stat-val">0</span>
+      </div>
+    </div>
+
+    <div class="levels-scroll">
+      <div class="level-card lvl-1">
+        <div class="lvl-header">
+          <div class="lvl-stars">★</div>
+          <div class="lvl-title">NIVEAU 1</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Pourcentage de commission</span><span class="lvl-val highlight">10%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise de tâches</span><span class="lvl-val highlight">10%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+
+      <div class="level-card lvl-2">
+        <div class="lvl-header">
+          <div class="lvl-stars">★★</div>
+          <div class="lvl-title">NIVEAU 2</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Pourcentage de commission</span><span class="lvl-val highlight">3%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise de tâches</span><span class="lvl-val highlight">3%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+
+      <div class="level-card lvl-3">
+        <div class="lvl-header">
+          <div class="lvl-stars">★★★</div>
+          <div class="lvl-title">NIVEAU 3</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Pourcentage de commission</span><span class="lvl-val highlight">1%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise de tâches</span><span class="lvl-val highlight">1%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+    </div>
+
+    <div class="invite-box">
+      <div class="invite-title"><i class="fa fa-user-plus"></i> Inviter des amis</div>
+      <p class="invite-desc">Partagez votre lien de parrainage et gagnez des commissions sur les investissements de votre équipe.</p>
+      <button class="cta-btn" onclick="openModal('invite')">Copier le lien d'invitation</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PROFILE PAGE ═══════════════════ -->
+  <div id="page-profile" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">GC</div>
+        <span class="header-brand">GOLD CORE</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar">
+          <span>GC</span>
+        </div>
+      </div>
+      <div class="profile-email">sergedaboulejunior@gmail.com</div>
+
+      <div class="balance-cards">
+        <div class="balance-card">
+          <span class="balance-label">Solde total (XAF)</span>
+          <span class="balance-val">0</span>
+        </div>
+        <div class="balance-card">
+          <span class="balance-label">Montant de la recharge (XAF)</span>
+          <span class="balance-val">0</span>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <div class="profile-action" onclick="openModal('recharge')">
+          <div class="profile-action-icon"><i class="fa fa-plus"></i></div>
+          <span>Recharger</span>
+        </div>
+        <div class="profile-action" onclick="openModal('retrait')">
+          <div class="profile-action-icon"><i class="fa fa-arrow-down"></i></div>
+          <span>Retirer</span>
+        </div>
+        <div class="profile-action">
+          <div class="profile-action-icon"><i class="fa fa-user-circle"></i></div>
+          <span>Compte</span>
+        </div>
+        <div class="profile-action">
+          <div class="profile-action-icon"><i class="fa fa-folder-open"></i></div>
+          <span>Dossiers financiers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-menu">
+      <div class="menu-row" onclick="openModal('transfer')">
+        <span class="menu-row-left"><i class="fa fa-right-left menu-ico"></i> Transfert</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row" onclick="openModal('password')">
+        <span class="menu-row-left"><i class="fa fa-lock menu-ico"></i> Changer le mot de passe</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row" onclick="openModal('invite')">
+        <span class="menu-row-left"><i class="fa fa-user-plus menu-ico"></i> Inviter des amis</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row danger">
+        <span class="menu-row-left"><i class="fa fa-right-from-bracket menu-ico"></i> Déconnexion</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ BOTTOM NAV ═══════════════════ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="showPage('home')">
+      <i class="fa fa-house"></i>
+      <span>Maison</span>
+    </button>
+    <button class="nav-item" id="nav-project" onclick="showPage('project')">
+      <i class="fa fa-chart-line"></i>
+      <span>Projet</span>
+    </button>
+    <button class="nav-item" id="nav-team" onclick="showPage('team')">
+      <i class="fa fa-users"></i>
+      <span>Équipe</span>
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="showPage('profile')">
+      <i class="fa fa-user"></i>
+      <span>Moi</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- Recharge Modal -->
+<div id="modal-recharge" class="modal-bg" onclick="closeModal('recharge')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3>Recharger</h3>
+      <button class="modal-close" onclick="closeModal('recharge')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label>Montant (XAF)</label>
+        <input type="number" placeholder="Ex: 10 000" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Méthode de paiement</label>
+        <select class="field-input">
+          <option>Mobile Money</option>
+          <option>Orange Money</option>
+          <option>MTN Mobile Money</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Numéro de téléphone</label>
+        <input type="tel" placeholder="+237 6XX XXX XXX" class="field-input" />
+      </div>
+      <button class="submit-btn">Confirmer la recharge</button>
+    </div>
+  </div>
+</div>
+
+<!-- Retrait Modal -->
+<div id="modal-retrait" class="modal-bg" onclick="closeModal('retrait')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3>Retirer</h3>
+      <button class="modal-close" onclick="closeModal('retrait')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="balance-info-box">
+        <span>Solde disponible</span>
+        <strong>0 XAF</strong>
+      </div>
+      <div class="input-group">
+        <label>Montant (XAF)</label>
+        <input type="number" placeholder="Ex: 5 000" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Méthode de retrait</label>
+        <select class="field-input">
+          <option>Mobile Money</option>
+          <option>Orange Money</option>
+          <option>MTN Mobile Money</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Numéro de téléphone</label>
+        <input type="tel" placeholder="+237 6XX XXX XXX" class="field-input" />
+      </div>
+      <button class="submit-btn">Confirmer le retrait</button>
+    </div>
+  </div>
+</div>
+
+<!-- Buy Modal -->
+<div id="modal-buy" class="modal-bg" onclick="closeModal('buy')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3 id="buy-modal-title">Acheter</h3>
+      <button class="modal-close" onclick="closeModal('buy')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="balance-info-box">
+        <span>Prix</span>
+        <strong id="buy-modal-price">—</strong>
+      </div>
+      <div class="input-group">
+        <label>Quantité</label>
+        <input type="number" value="1" min="1" class="field-input" />
+      </div>
+      <button class="submit-btn">Confirmer l'achat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div id="modal-transfer" class="modal-bg" onclick="closeModal('transfer')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3>Transfert</h3>
+      <button class="modal-close" onclick="closeModal('transfer')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label>Email du destinataire</label>
+        <input type="email" placeholder="exemple@email.com" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Montant (XAF)</label>
+        <input type="number" placeholder="Ex: 5 000" class="field-input" />
+      </div>
+      <button class="submit-btn">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Modal -->
+<div id="modal-password" class="modal-bg" onclick="closeModal('password')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3>Changer le mot de passe</h3>
+      <button class="modal-close" onclick="closeModal('password')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label>Mot de passe actuel</label>
+        <input type="password" placeholder="••••••••" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" placeholder="••••••••" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Confirmer le nouveau mot de passe</label>
+        <input type="password" placeholder="••••••••" class="field-input" />
+      </div>
+      <button class="submit-btn">Changer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite Modal -->
+<div id="modal-invite" class="modal-bg" onclick="closeModal('invite')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <h3>Inviter des amis</h3>
+      <button class="modal-close" onclick="closeModal('invite')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="invite-qr">
+        <div class="qr-placeholder"><i class="fa fa-qrcode"></i></div>
+        <p>Scannez ce code QR</p>
+      </div>
+      <div class="invite-link-box">
+        <input type="text" id="invite-link-input" value="https://goldcore-cmr.com/ref/serge123" class="field-input" readonly />
+        <button class="copy-btn" onclick="copyInviteLink()"><i class="fa fa-copy"></i> Copier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
