@@ -1,5 +1,5 @@
 /* =========================================
-   GOLD CORE — Global Reset & Variables
+   MIDAS INVEST — Global Reset & Variables
    ========================================= */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1014,3 +1014,457 @@ body {
     border-radius: 0 0 36px 36px;
   }
 }
+
+/* =========================================
+   Home Balance Bar
+   ========================================= */
+.home-balance-bar {
+  background: var(--gold-1);
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 0;
+}
+.home-bal-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.home-bal-sep {
+  width: 1px;
+  height: 30px;
+  background: rgba(255,255,255,.2);
+}
+.home-bal-label { font-size: 10px; color: rgba(255,255,255,.6); text-transform: uppercase; letter-spacing: .5px; }
+.home-bal-val   { font-size: 15px; font-weight: 900; color: var(--gold-4); }
+
+/* =========================================
+   Profile enhancements
+   ========================================= */
+.avatar-wrap { position: relative; }
+.avatar-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  background: var(--gold-4);
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--gold-1);
+}
+.profile-rank {
+  font-size: 11px;
+  color: rgba(255,255,255,.7);
+  background: rgba(0,0,0,.2);
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+}
+
+.profile-action-icon.recharge  { background: rgba(46,204,113,.3);  border-color: rgba(46,204,113,.5); }
+.profile-action-icon.retrait   { background: rgba(231,76,60,.3);   border-color: rgba(231,76,60,.5); }
+.profile-action-icon.transfer  { background: rgba(52,152,219,.3);  border-color: rgba(52,152,219,.5); }
+.profile-action-icon.history   { background: rgba(155,89,182,.3);  border-color: rgba(155,89,182,.5); }
+
+/* =========================================
+   Modal header icons
+   ========================================= */
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.modal-head h3 { flex: 1; font-size: 17px; font-weight: 800; color: var(--gold-1); }
+.modal-head-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.recharge-ico  { background: #27ae60; }
+.retrait-ico   { background: #e74c3c; }
+.buy-ico       { background: var(--gold-3); }
+.tx-ico        { background: #8e44ad; }
+.transfer-ico  { background: #2980b9; }
+.lock-ico      { background: #7f8c8d; }
+.invite-ico    { background: #16a085; }
+
+/* =========================================
+   Tall modal sheet
+   ========================================= */
+.tall-sheet {
+  max-height: 90dvh !important;
+}
+
+/* =========================================
+   Amount presets
+   ========================================= */
+.amount-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.preset-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 8px 4px;
+  background: var(--gold-pale);
+  border: 1.5px solid var(--gold-4);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-2);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.preset-btn:active { background: var(--gold-3); color: #fff; }
+
+/* =========================================
+   Input with currency / flag
+   ========================================= */
+.input-with-currency,
+.input-with-flag {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-with-currency .field-input { padding-right: 52px; }
+.currency-badge {
+  position: absolute;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-2);
+  pointer-events: none;
+}
+.dial-code {
+  flex-shrink: 0;
+  padding: 12px 10px;
+  background: #f0f0f0;
+  border: 2px solid #eee;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+.phone-field { border-radius: 0 12px 12px 0 !important; }
+
+/* =========================================
+   Field hint & error
+   ========================================= */
+.field-hint {
+  font-weight: 400;
+  color: #aaa;
+  font-size: 11px;
+  margin-left: 4px;
+}
+.field-error {
+  font-size: 11.5px;
+  color: #e74c3c;
+  font-weight: 600;
+  min-height: 16px;
+  display: block;
+}
+.field-input.is-error {
+  border-color: #e74c3c !important;
+  background: #fff8f8;
+}
+
+/* =========================================
+   Loading button state
+   ========================================= */
+.submit-btn.loading {
+  opacity: .8;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #aaa, #ccc);
+  box-shadow: none;
+}
+
+/* =========================================
+   Buy modal specifics
+   ========================================= */
+.buy-summary-card {
+  background: var(--gold-pale);
+  border: 1.5px solid var(--gold-4);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.buy-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #777;
+}
+.buy-summary-row strong { font-size: 15px; font-weight: 800; color: var(--gold-1); }
+.buy-summary-row strong.gold-text { color: var(--gold-3); }
+
+.qty-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qty-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--gold-pale);
+  border: 2px solid var(--gold-4);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qty-btn:active { background: var(--gold-3); color: #fff; }
+.qty-input {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  border-radius: 10px !important;
+}
+
+.buy-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--gold-1);
+  border-radius: 12px;
+  color: rgba(255,255,255,.7);
+  font-size: 13px;
+  font-weight: 600;
+}
+.buy-total { font-size: 18px; font-weight: 900; color: var(--gold-4); }
+
+/* =========================================
+   Transaction list
+   ========================================= */
+.tx-filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid #f0f0f0;
+}
+.tx-filter-bar::-webkit-scrollbar { display: none; }
+.tx-filter {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #eee;
+  background: #fafafa;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+}
+.tx-filter.active { background: var(--gold-3); color: #fff; border-color: var(--gold-3); }
+
+.transactions-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  max-height: 60dvh;
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f8f8f8;
+  transition: background .15s;
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-item:active { background: #fafafa; }
+
+.tx-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.tx-green { background: #eafaf1; color: #27ae60; }
+.tx-red   { background: #fdf2f2; color: #e74c3c; }
+.tx-gold  { background: #fdf8ed; color: var(--gold-3); }
+
+.tx-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.tx-label { font-size: 13px; font-weight: 700; color: var(--gold-1); }
+.tx-date  { font-size: 11px; color: #aaa; }
+
+.tx-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.tx-amount { font-size: 14px; font-weight: 900; }
+.tx-amount.tx-green { color: #27ae60; }
+.tx-amount.tx-red   { color: #e74c3c; }
+.tx-amount.tx-gold  { color: var(--gold-2); }
+
+.tx-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.tx-status.success { background: #eafaf1; color: #27ae60; }
+.tx-status.failed  { background: #fdf2f2; color: #e74c3c; }
+
+.tx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 16px;
+  color: #ccc;
+}
+.tx-empty i { font-size: 42px; }
+.tx-empty p { font-size: 14px; }
+
+/* =========================================
+   Portfolio Cards
+   ========================================= */
+.portfolio-card {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin: 12px 12px 0;
+}
+.portfolio-card:last-child { margin-bottom: 12px; }
+
+.port-thumb {
+  height: 90px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px;
+}
+
+.port-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.port-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #888;
+}
+.port-row strong { font-size: 13px; font-weight: 700; color: var(--gold-1); }
+.port-row strong.gold-text { color: var(--gold-3); }
+
+.progress-bar-wrap {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--gold-grad);
+  border-radius: 3px;
+  transition: width .6s ease;
+}
+
+.port-date { font-size: 10px; color: #bbb; margin-top: 2px; }
+
+/* =========================================
+   Commission info in invite modal
+   ========================================= */
+.commission-info {
+  display: flex;
+  gap: 8px;
+}
+.comm-item {
+  flex: 1;
+  background: var(--gold-pale);
+  border: 1.5px solid var(--gold-4);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.comm-lvl { font-size: 11px; color: #888; font-weight: 600; }
+.comm-pct { font-size: 20px; font-weight: 900; color: var(--gold-3); }
+
+/* =========================================
+   Success Overlay
+   ========================================= */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 700;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.success-box {
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(.6); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+.success-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(39,174,96,.4);
+}
+
+.success-box p    { font-size: 18px; font-weight: 800; color: var(--gold-1); }
+.success-box span { font-size: 13px; color: #888; }
+
+/* =========================================
+   Gold text utility
+   ========================================= */
+.gold-text { color: var(--gold-3) !important; }
+
