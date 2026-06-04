@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bar1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFE066"/>
+      <stop offset="35%"  stop-color="#E8B84B"/>
+      <stop offset="65%"  stop-color="#C8922A"/>
+      <stop offset="100%" stop-color="#7A4D0A"/>
+    </linearGradient>
+    <linearGradient id="barSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#A07010"/>
+      <stop offset="100%" stop-color="#5A3600"/>
+    </linearGradient>
+    <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#E8B84B" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#E8B84B" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="curveStroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#C8922A"/>
+      <stop offset="50%"  stop-color="#FFE066"/>
+      <stop offset="100%" stop-color="#E8B84B"/>
+    </linearGradient>
+    <radialGradient id="coin" cx="38%" cy="35%" r="65%">
+      <stop offset="0%"   stop-color="#FFF5CC"/>
+      <stop offset="40%"  stop-color="#FFD700"/>
+      <stop offset="80%"  stop-color="#C8922A"/>
+      <stop offset="100%" stop-color="#7A4D0A"/>
+    </radialGradient>
+    <linearGradient id="crownGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFE066"/>
+      <stop offset="50%"  stop-color="#E8B84B"/>
+      <stop offset="100%" stop-color="#C8922A"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Courbe montante -->
+  <path d="M 30 420 C 80 410, 130 380, 180 340 S 260 260, 310 200 S 360 140, 380 80"
+        fill="none" stroke="url(#curveStroke)" stroke-width="3.5"
+        stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
+
+  <!-- Zone sous la courbe -->
+  <path d="M 30 420 C 80 410, 130 380, 180 340 S 260 260, 310 200 S 360 140, 380 80
+           L 380 430 L 30 430 Z"
+        fill="url(#curveGrad)"/>
+
+  <!-- Points courbe -->
+  <circle cx="180" cy="340" r="5" fill="#FFE066" opacity="0.9"/>
+  <circle cx="310" cy="200" r="5" fill="#FFE066" opacity="0.9"/>
+  <circle cx="380" cy="80"  r="6" fill="#FFD700" filter="url(#glow)"/>
+  <circle cx="380" cy="80"  r="14" fill="#FFD700" opacity="0.18"/>
+
+  <!-- Lingot 3 (arrière) -->
+  <g transform="translate(240, 420)">
+    <rect x="0" y="0" width="110" height="48" rx="8" fill="url(#bar1)" opacity="0.6"/>
+    <rect x="0" y="0" width="110" height="12" rx="4" fill="#FFE066" opacity="0.3"/>
+    <rect x="6"  y="18" width="98" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
+  </g>
+
+  <!-- Lingot 2 (milieu) -->
+  <g transform="translate(130, 398)">
+    <rect x="0" y="0" width="128" height="54" rx="9" fill="url(#bar1)"/>
+    <rect x="0" y="0" width="128" height="14" rx="7" fill="#FFE066" opacity="0.35"/>
+    <rect x="10" y="20" width="108" height="2.5" rx="1" fill="rgba(255,255,255,0.22)"/>
+    <rect x="10" y="32" width="108" height="2.5" rx="1" fill="rgba(255,255,255,0.12)"/>
+    <text x="64" y="44" text-anchor="middle"
+          font-family="Arial, sans-serif" font-size="9" font-weight="700"
+          fill="rgba(90,54,0,0.6)" letter-spacing="2">999.9</text>
+  </g>
+
+  <!-- Lingot 1 (avant) -->
+  <g transform="translate(80, 375)">
+    <rect x="0" y="0" width="148" height="60" rx="10" fill="url(#bar1)"/>
+    <rect x="0" y="0" width="148" height="18" rx="8" fill="#FFF5CC" opacity="0.4"/>
+    <ellipse cx="22" cy="8" rx="16" ry="8" fill="#fff" opacity="0.25"/>
+    <rect x="12" y="24" width="124" height="3" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+    <rect x="12" y="36" width="124" height="3" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+    <text x="74" y="52" text-anchor="middle"
+          font-family="Arial, sans-serif" font-size="10" font-weight="800"
+          fill="rgba(59,34,0,0.55)" letter-spacing="2.5">GOLD 24K</text>
+    <path d="M 0 60 L -12 75 L 136 75 L 148 60 Z" fill="url(#barSide)"/>
+    <path d="M 148 0 L 160 15 L 160 75 L 148 60 Z" fill="url(#barSide)" opacity="0.7"/>
+  </g>
+
+  <!-- Pièces d'or -->
+  <g transform="translate(40, 300)">
+    <circle cx="0" cy="0" r="28" fill="url(#coin)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#C8922A" stroke-width="2" opacity="0.5"/>
+    <text x="0" y="4" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="9" font-weight="900" fill="#7A4D0A">XAF</text>
+  </g>
+
+  <g transform="translate(345, 280)">
+    <circle cx="0" cy="0" r="22" fill="url(#coin)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="17" fill="none" stroke="#C8922A" stroke-width="1.5" opacity="0.5"/>
+    <text x="0" y="4" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="8" font-weight="900" fill="#7A4D0A">XAF</text>
+  </g>
+
+  <g transform="translate(60, 200)">
+    <circle cx="0" cy="0" r="16" fill="url(#coin)" opacity="0.8"/>
+    <text x="0" y="4" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="7" font-weight="900" fill="#7A4D0A">XAF</text>
+  </g>
+
+  <g transform="translate(330, 360)">
+    <circle cx="0" cy="0" r="19" fill="url(#coin)" filter="url(#glow)" opacity="0.85"/>
+    <text x="0" y="4" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="8" font-weight="900" fill="#7A4D0A">XAF</text>
+  </g>
+
+  <!-- Couronne MIDAS -->
+  <g transform="translate(200, 50)" filter="url(#glowStrong)">
+    <rect x="-45" y="20" width="90" height="30" rx="4" fill="url(#crownGrad)"/>
+    <polygon points="-40,20 -30,-15 -20,20" fill="url(#crownGrad)"/>
+    <polygon points="-10,20   0,-25  10,20"  fill="url(#crownGrad)"/>
+    <polygon points=" 20,20  30,-15  40,20"  fill="url(#crownGrad)"/>
+    <ellipse cx="0" cy="-8" rx="7" ry="9" fill="#FFE066"/>
+    <ellipse cx="0" cy="-8" rx="3.5" ry="4.5" fill="#fff" opacity="0.5"/>
+    <circle cx="-30" cy="3"  r="5" fill="#FFD700"/>
+    <circle cx=" 30" cy="3"  r="5" fill="#FFD700"/>
+    <rect x="-42" y="22" width="84" height="8" rx="3" fill="#FFF5CC" opacity="0.3"/>
+    <circle cx="-32" cy="35" r="3.5" fill="#FFE066"/>
+    <circle cx="-16" cy="37" r="3.5" fill="#FFE066"/>
+    <circle cx="0"   cy="38" r="4"   fill="#FFE066"/>
+    <circle cx=" 16" cy="37" r="3.5" fill="#FFE066"/>
+    <circle cx=" 32" cy="35" r="3.5" fill="#FFE066"/>
+  </g>
+
+  <!-- Sparkles -->
+  <g fill="#FFD700" opacity="0.9">
+    <g transform="translate(110, 155)">
+      <polygon points="0,-10 2,-2 10,0 2,2 0,10 -2,2 -10,0 -2,-2" opacity="0.85"/>
+    </g>
+    <g transform="translate(320, 140)" opacity="0.8">
+      <polygon points="0,-7 1.5,-1.5 7,0 1.5,1.5 0,7 -1.5,1.5 -7,0 -1.5,-1.5"/>
+    </g>
+    <g transform="translate(360, 310)" opacity="0.75">
+      <polygon points="0,-8 1.8,-1.8 8,0 1.8,1.8 0,8 -1.8,1.8 -8,0 -1.8,-1.8"/>
+    </g>
+    <g transform="translate(70, 350)" opacity="0.7">
+      <polygon points="0,-5 1,-1 5,0 1,1 0,5 -1,1 -5,0 -1,-1"/>
+    </g>
+    <g transform="translate(250, 95)" opacity="0.8">
+      <polygon points="0,-9 2,-2 9,0 2,2 0,9 -2,2 -9,0 -2,-2"/>
+    </g>
+  </g>
+
+  <!-- Points lumineux -->
+  <circle cx="155" cy="260" r="2.5" fill="#FFE066" opacity="0.7"/>
+  <circle cx="290" cy="170" r="2"   fill="#FFE066" opacity="0.65"/>
+  <circle cx="340" cy="420" r="2"   fill="#FFE066" opacity="0.6"/>
+  <circle cx="50"  cy="170" r="1.8" fill="#FFD700" opacity="0.55"/>
+
+  <!-- Texte -->
+  <text x="200" y="148" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="15" font-weight="800" letter-spacing="0.5"
+        fill="#C8922A" opacity="0.9">Votre argent travaille</text>
+  <text x="200" y="168" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="14" font-weight="700" letter-spacing="0.3"
+        fill="#E8B84B" opacity="0.85">pour vous 24h/24</text>
+</svg>

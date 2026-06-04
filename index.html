@@ -6,8 +6,22 @@
   <title>MIDAS INVEST</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <script src="js/db.js"></script>
 </head>
 <body>
+<script>
+(function(){
+  var s=localStorage.getItem('midas_session');
+  if(!s){window.location.href='auth.html';return;}
+  try{
+    var sess=JSON.parse(s);
+    var db=JSON.parse(localStorage.getItem('midas_db_v2')||'{}');
+    if(!db.users||!db.users[sess.email]||db.users[sess.email].token!==sess.token){
+      window.location.href='auth.html';
+    }
+  }catch(e){window.location.href='auth.html';}
+})();
+</script>
 <div class="app-wrapper">
 
   <!-- ═══════════════════ HOME PAGE ═══════════════════ -->
@@ -62,6 +76,7 @@
     </div>
 
     <div class="mine-hero">
+      <img src="assets/mine-hero.svg" alt="Mine d'or" class="mine-hero-img" />
       <div class="mine-hero-content">
         <span class="mine-hero-label">MIDAS INVEST</span>
         <span class="mine-hero-sub">L'or, votre avenir — Investissez maintenant</span>
@@ -284,19 +299,19 @@
     <div class="team-stats-grid">
       <div class="team-stat-box">
         <span class="team-stat-label">Taille de l'équipe</span>
-        <span class="team-stat-val">0</span>
+        <span class="team-stat-val" id="team-size">0</span>
       </div>
       <div class="team-stat-box">
         <span class="team-stat-label">Recharge d'équipe</span>
-        <span class="team-stat-val">XAF0</span>
+        <span class="team-stat-val" id="team-recharge">0 XAF</span>
       </div>
       <div class="team-stat-box">
         <span class="team-stat-label">Nouvelle équipe</span>
-        <span class="team-stat-val">0</span>
+        <span class="team-stat-val" id="team-new">0</span>
       </div>
       <div class="team-stat-box">
         <span class="team-stat-label">Première recharge</span>
-        <span class="team-stat-val">0</span>
+        <span class="team-stat-val" id="team-first-rec">0</span>
       </div>
       <div class="team-stat-box team-stat-full">
         <span class="team-stat-label">Premier retrait</span>
@@ -365,8 +380,16 @@
         <div class="avatar"><span>MI</span></div>
         <div class="avatar-badge"><i class="fa fa-star"></i></div>
       </div>
-      <div class="profile-email" id="profile-email-display">sergedaboulejunior@gmail.com</div>
+      <div class="profile-name-text" id="profile-name-display"></div>
+      <div class="profile-email" id="profile-email-display"></div>
       <div class="profile-rank">Investisseur Starter</div>
+      <div class="invite-code-chip">
+        <i class="fa fa-ticket" style="color:rgba(255,255,255,.7)"></i>
+        <span class="invite-code-val" id="my-invite-code">—</span>
+        <button class="copy-code-btn" onclick="copyMyCode()" title="Copier mon code">
+          <i class="fa fa-copy"></i>
+        </button>
+      </div>
 
       <div class="balance-cards">
         <div class="balance-card">
@@ -416,7 +439,7 @@
         <span class="menu-row-left"><i class="fa fa-user-plus menu-ico"></i> Inviter des amis</span>
         <i class="fa fa-chevron-right menu-arr"></i>
       </div>
-      <div class="menu-row danger">
+      <div class="menu-row danger" onclick="logout()">
         <span class="menu-row-left"><i class="fa fa-right-from-bracket menu-ico"></i> Déconnexion</span>
         <i class="fa fa-chevron-right menu-arr"></i>
       </div>
@@ -690,7 +713,7 @@
         <p>Scannez pour rejoindre</p>
       </div>
       <div class="invite-link-box">
-        <input type="text" id="invite-link-input" value="https://midas-invest.com/ref/MIDAS123" class="field-input" readonly />
+        <input type="text" id="invite-link-input" value="" class="field-input" readonly placeholder="Chargement…" />
         <button class="copy-btn" onclick="copyInviteLink()"><i class="fa fa-copy"></i> Copier</button>
       </div>
     </div>

@@ -1468,3 +1468,65 @@ body {
    ========================================= */
 .gold-text { color: var(--gold-3) !important; }
 
+/* =========================================
+   Mine hero SVG image
+   ========================================= */
+.mine-hero { position: relative; overflow: hidden; }
+
+.mine-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* =========================================
+   Profile name display
+   ========================================= */
+.profile-name-text {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+
+/* =========================================
+   Invite code chip (profile)
+   ========================================= */
+.invite-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 10px;
+  padding: 7px 14px;
+  margin-top: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.invite-code-val {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.copy-code-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.8);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+}
+.copy-code-btn:hover { color: #fff; }
+

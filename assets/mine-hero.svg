@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220" width="800" height="220">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#080410"/>
+      <stop offset="55%"  stop-color="#1A0900"/>
+      <stop offset="100%" stop-color="#3B1800"/>
+    </linearGradient>
+    <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#2C1400"/>
+      <stop offset="100%" stop-color="#1A0900"/>
+    </linearGradient>
+    <linearGradient id="mtn2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3D1E00"/>
+      <stop offset="100%" stop-color="#1A0900"/>
+    </linearGradient>
+    <radialGradient id="nuggetGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFE066" stop-opacity="0.9"/>
+      <stop offset="50%"  stop-color="#C8922A" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#7A4D0A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nugget" cx="35%" cy="35%" r="65%">
+      <stop offset="0%"   stop-color="#FFE066"/>
+      <stop offset="45%"  stop-color="#E8B84B"/>
+      <stop offset="100%" stop-color="#7A4D0A"/>
+    </radialGradient>
+    <radialGradient id="mineGlow" cx="50%" cy="100%" r="80%">
+      <stop offset="0%"   stop-color="#E8B84B" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#E8B84B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon" cx="35%" cy="35%" r="65%">
+      <stop offset="0%"   stop-color="#FFF5CC"/>
+      <stop offset="100%" stop-color="#E0C060"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Fond ciel nocturne -->
+  <rect width="800" height="220" fill="url(#sky)"/>
+
+  <!-- Étoiles -->
+  <g fill="#fff">
+    <circle cx="42"  cy="18"  r="1.2" opacity="0.9"/>
+    <circle cx="110" cy="12"  r="0.8" opacity="0.7"/>
+    <circle cx="195" cy="25"  r="1.1" opacity="0.85"/>
+    <circle cx="260" cy="10"  r="0.9" opacity="0.6"/>
+    <circle cx="350" cy="18"  r="1.3" opacity="0.95"/>
+    <circle cx="420" cy="8"   r="0.7" opacity="0.65"/>
+    <circle cx="510" cy="22"  r="1.0" opacity="0.8"/>
+    <circle cx="590" cy="14"  r="1.2" opacity="0.9"/>
+    <circle cx="670" cy="30"  r="0.8" opacity="0.7"/>
+    <circle cx="740" cy="10"  r="1.1" opacity="0.85"/>
+    <circle cx="780" cy="22"  r="0.6" opacity="0.6"/>
+    <circle cx="75"  cy="45"  r="0.7" opacity="0.55"/>
+    <circle cx="320" cy="38"  r="0.9" opacity="0.7"/>
+    <circle cx="480" cy="42"  r="0.8" opacity="0.65"/>
+    <circle cx="625" cy="50"  r="1.0" opacity="0.75"/>
+  </g>
+
+  <!-- Lune -->
+  <circle cx="700" cy="40" r="22" fill="url(#moon)" opacity="0.92"/>
+  <circle cx="708" cy="36" r="18" fill="#080410" opacity="0.35"/>
+
+  <!-- Montagnes arrière gauche -->
+  <polygon points="0,180 80,70 160,140 240,85 300,155 0,155"
+           fill="url(#mtn1)" opacity="0.7"/>
+
+  <!-- Montagnes arrière droite -->
+  <polygon points="500,180 580,55 660,110 730,65 800,120 800,180"
+           fill="url(#mtn1)" opacity="0.65"/>
+
+  <!-- Montagne centrale -->
+  <polygon points="250,200 340,80 420,130 500,75 580,145 620,200"
+           fill="url(#mtn2)" opacity="0.85"/>
+
+  <!-- Silhouette excavatrice -->
+  <g fill="#0F0600" opacity="0.9">
+    <rect x="15" y="155" width="70" height="30" rx="3"/>
+    <rect x="25" y="140" width="32" height="22" rx="2"/>
+    <rect x="28" y="143" width="13" height="9" rx="1" fill="#C8922A" opacity="0.4"/>
+    <rect x="50" y="118" width="8" height="40" rx="2" transform="rotate(-30 54 138)"/>
+    <rect x="72" y="108" width="6" height="28" rx="2" transform="rotate(15 75 122)"/>
+    <polygon points="85,95 100,95 96,108 89,108"/>
+    <rect x="10" y="183" width="80" height="10" rx="5"/>
+    <circle cx="22"  cy="188" r="5" fill="#1A0900"/>
+    <circle cx="40"  cy="188" r="5" fill="#1A0900"/>
+    <circle cx="58"  cy="188" r="5" fill="#1A0900"/>
+    <circle cx="76"  cy="188" r="5" fill="#1A0900"/>
+  </g>
+
+  <!-- Entrée de mine -->
+  <g>
+    <ellipse cx="400" cy="200" rx="60" ry="30" fill="url(#mineGlow)"/>
+    <rect x="350" y="130" width="14" height="75" rx="3" fill="#2C1400"/>
+    <rect x="436" y="130" width="14" height="75" rx="3" fill="#2C1400"/>
+    <rect x="345" y="127" width="110" height="12" rx="4" fill="#3D1E00"/>
+    <rect x="358" y="110" width="84" height="20" rx="3" fill="#1A0900"/>
+    <text x="400" y="124" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="9" font-weight="900" fill="#E8B84B" letter-spacing="1">MINE D'OR</text>
+    <rect x="364" y="139" width="72" height="66" rx="2" fill="#050204" opacity="0.9"/>
+    <ellipse cx="400" cy="200" rx="28" ry="12" fill="#E8B84B" opacity="0.12"/>
+  </g>
+
+  <!-- Rails -->
+  <g stroke="#3D1E00" stroke-width="3" fill="none">
+    <line x1="200" y1="205" x2="620" y2="205"/>
+    <line x1="200" y1="213" x2="620" y2="213"/>
+    <line x1="220" y1="203" x2="220" y2="215" stroke-width="2"/>
+    <line x1="250" y1="203" x2="250" y2="215" stroke-width="2"/>
+    <line x1="280" y1="203" x2="280" y2="215" stroke-width="2"/>
+    <line x1="310" y1="203" x2="310" y2="215" stroke-width="2"/>
+    <line x1="340" y1="203" x2="340" y2="215" stroke-width="2"/>
+    <line x1="460" y1="203" x2="460" y2="215" stroke-width="2"/>
+    <line x1="490" y1="203" x2="490" y2="215" stroke-width="2"/>
+    <line x1="520" y1="203" x2="520" y2="215" stroke-width="2"/>
+    <line x1="550" y1="203" x2="550" y2="215" stroke-width="2"/>
+    <line x1="580" y1="203" x2="580" y2="215" stroke-width="2"/>
+  </g>
+
+  <!-- Wagonnet 1 avec pépites d'or -->
+  <g transform="translate(210, 178)">
+    <rect x="0" y="0" width="56" height="28" rx="4" fill="#2C1400"/>
+    <rect x="-2" y="-3" width="60" height="6" rx="2" fill="#3D1E00"/>
+    <ellipse cx="28" cy="-8" rx="24" ry="12" fill="url(#nuggetGlow)" opacity="0.7"/>
+    <ellipse cx="14" cy="-4" rx="9"  ry="7"  fill="url(#nugget)"/>
+    <ellipse cx="28" cy="-8" rx="11" ry="8"  fill="url(#nugget)"/>
+    <ellipse cx="42" cy="-4" rx="8"  ry="6"  fill="url(#nugget)"/>
+    <ellipse cx="22" cy="-12" rx="7" ry="5"  fill="url(#nugget)" opacity="0.85"/>
+    <ellipse cx="12" cy="-6"  rx="3" ry="2" fill="#FFF5CC" opacity="0.6"/>
+    <ellipse cx="28" cy="-11" rx="4" ry="2.5" fill="#FFF5CC" opacity="0.55"/>
+    <circle cx="10" cy="28" r="8"  fill="#1A0900" stroke="#C8922A" stroke-width="2"/>
+    <circle cx="46" cy="28" r="8"  fill="#1A0900" stroke="#C8922A" stroke-width="2"/>
+    <circle cx="10" cy="28" r="3"  fill="#C8922A"/>
+    <circle cx="46" cy="28" r="3"  fill="#C8922A"/>
+  </g>
+
+  <!-- Wagonnet 2 -->
+  <g transform="translate(490, 180)" opacity="0.75">
+    <rect x="0" y="0" width="48" height="24" rx="3" fill="#2C1400"/>
+    <rect x="-2" y="-3" width="52" height="5" rx="2" fill="#3D1E00"/>
+    <ellipse cx="24" cy="-6" rx="18" ry="9" fill="url(#nuggetGlow)" opacity="0.6"/>
+    <ellipse cx="12" cy="-3" rx="8"  ry="6" fill="url(#nugget)"/>
+    <ellipse cx="26" cy="-7" rx="9"  ry="7" fill="url(#nugget)"/>
+    <ellipse cx="38" cy="-3" rx="7"  ry="5" fill="url(#nugget)" opacity="0.8"/>
+    <circle cx="9"  cy="24" r="7" fill="#1A0900" stroke="#C8922A" stroke-width="1.5"/>
+    <circle cx="39" cy="24" r="7" fill="#1A0900" stroke="#C8922A" stroke-width="1.5"/>
+    <circle cx="9"  cy="24" r="2.5" fill="#C8922A"/>
+    <circle cx="39" cy="24" r="2.5" fill="#C8922A"/>
+  </g>
+
+  <!-- Sol -->
+  <rect x="0" y="208" width="800" height="12" fill="#1A0900"/>
+
+  <!-- Texte titre -->
+  <text x="400" y="50" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="22" font-weight="900" letter-spacing="3"
+        fill="#FFE066"
+        filter="drop-shadow(0 2px 6px rgba(0,0,0,0.8))">
+    MIDAS INVEST — Mine d'Or
+  </text>
+  <text x="400" y="70" text-anchor="middle"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="11" letter-spacing="1.5"
+        fill="rgba(255,255,255,0.6)">
+    L'or africain, votre avenir
+  </text>
+</svg>

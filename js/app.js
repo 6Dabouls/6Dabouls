@@ -1,34 +1,13 @@
 'use strict';
 
 /* ═══════════════════════════════════════════
-   STATE & PERSISTENCE
+   HELPERS
 ═══════════════════════════════════════════ */
-const STORAGE_KEY = 'midas_invest_v1';
-
-const STATE = {
-  balance: 0,
-  totalRecharged: 0,
-  transactions: [],
-  portfolio: []
-};
-
-function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch (_) {}
+function currentUserEmail() {
+  const sess = DB.getSession();
+  return sess ? sess.email : null;
 }
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const data = JSON.parse(raw);
-      Object.assign(STATE, data);
-    }
-  } catch (_) {}
-}
-
-/* ═══════════════════════════════════════════
-   FORMATTING
-═══════════════════════════════════════════ */
 function xaf(n) {
   return Number(n).toLocaleString('fr-FR') + ' XAF';
 }
@@ -43,18 +22,28 @@ function shortDate(iso) {
    UI UPDATES
 ═══════════════════════════════════════════ */
 function updateUI() {
+  const user = DB.getSession();
+  if (!user) return;
+
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  set('ui-balance',   Number(STATE.balance).toLocaleString('fr-FR'));
-  set('ui-recharged', Number(STATE.totalRecharged).toLocaleString('fr-FR'));
-  set('home-balance', xaf(STATE.balance));
-  set('home-recharged', xaf(STATE.totalRecharged));
-  set('ui-retrait-balance', xaf(STATE.balance));
-  set('ui-transfer-balance', xaf(STATE.balance));
-  if (document.getElementById('buy-modal-balance')) {
-    set('buy-modal-balance', xaf(STATE.balance));
-  }
+  set('ui-balance',   Number(user.balance).toLocaleString('fr-FR'));
+  set('ui-recharged', Number(user.totalRecharged).toLocaleString('fr-FR'));
+  set('home-balance',   xaf(user.balance));
+  set('home-recharged', xaf(user.totalRecharged));
+  set('ui-retrait-balance',  xaf(user.balance));
+  set('ui-transfer-balance', xaf(user.balance));
+  set('buy-modal-balance',   xaf(user.balance));
+
+  set('profile-name-display',  user.name  || '');
+  set('profile-email-display', user.email || '');
+  set('my-invite-code',        user.inviteCode || '—');
+
+  const invInput = document.getElementById('invite-link-input');
+  if (invInput) invInput.value = user.inviteCode || '';
+
   renderPortfolio();
+  renderTeamStats();
 }
 
 /* ═══════════════════════════════════════════
@@ -107,13 +96,15 @@ function clearErrors() {
 }
 
 function updateRetaitBalance() {
-  const el = document.getElementById('ui-retrait-balance');
-  if (el) el.textContent = xaf(STATE.balance);
+  const user = DB.getSession();
+  const el   = document.getElementById('ui-retrait-balance');
+  if (el && user) el.textContent = xaf(user.balance);
 }
 
 function updateTransferBalance() {
-  const el = document.getElementById('ui-transfer-balance');
-  if (el) el.textContent = xaf(STATE.balance);
+  const user = DB.getSession();
+  const el   = document.getElementById('ui-transfer-balance');
+  if (el && user) el.textContent = xaf(user.balance);
 }
 
 /* ── Close on Escape ── */
@@ -185,7 +176,7 @@ function showSuccess(title, sub) {
   const msg     = document.getElementById('success-msg');
   const subEl   = document.getElementById('success-sub');
   if (!overlay) return;
-  if (msg)   msg.textContent  = title;
+  if (msg)   msg.textContent   = title;
   if (subEl) subEl.textContent = sub || '';
   overlay.style.display = 'flex';
   setTimeout(() => { overlay.style.display = 'none'; }, 2200);
@@ -207,15 +198,17 @@ function showToast(msg, ms) {
 ═══════════════════════════════════════════ */
 function handleRecharge() {
   clearErrors();
+  const email = currentUserEmail();
+  if (!email) return;
+
   const amountEl = document.getElementById('f-recharge-amount');
   const phoneEl  = document.getElementById('f-recharge-phone');
-  const method   = document.getElementById('f-recharge-method')?.value || '';
+  const method   = document.getElementById('f-recharge-method')?.value || 'mtn';
 
   const amount = parseFloat(amountEl?.value);
   const phone  = phoneEl?.value.trim();
 
   let valid = true;
-
   if (!amount || amount < 1000) {
     fieldError('f-recharge-amount', 'err-recharge-amount', 'Montant minimum: 1 000 XAF');
     valid = false;
@@ -227,22 +220,11 @@ function handleRecharge() {
   if (!valid) return;
 
   setLoadingBtn('btn-recharge', true);
-
   setTimeout(() => {
-    STATE.balance       += amount;
-    STATE.totalRecharged += amount;
-    STATE.transactions.unshift({
-      id:     Date.now(),
-      type:   'recharge',
-      amount,
-      method,
-      phone,
-      date:   new Date().toISOString(),
-      status: 'success'
-    });
-    saveState();
-    updateUI();
+    const result = DB.recharge(email, amount, method, phone);
     setLoadingBtn('btn-recharge', false);
+    if (result.error) { showToast(result.error); return; }
+    updateUI();
     closeModal('recharge');
     if (amountEl) amountEl.value = '';
     if (phoneEl)  phoneEl.value  = '';
@@ -255,21 +237,19 @@ function handleRecharge() {
 ═══════════════════════════════════════════ */
 function handleRetrait() {
   clearErrors();
+  const email = currentUserEmail();
+  if (!email) return;
+
   const amountEl = document.getElementById('f-retrait-amount');
   const phoneEl  = document.getElementById('f-retrait-phone');
-  const method   = document.getElementById('f-retrait-method')?.value || '';
+  const method   = document.getElementById('f-retrait-method')?.value || 'mtn';
 
   const amount = parseFloat(amountEl?.value);
   const phone  = phoneEl?.value.trim();
 
   let valid = true;
-
   if (!amount || amount < 1000) {
     fieldError('f-retrait-amount', 'err-retrait-amount', 'Montant minimum: 1 000 XAF');
-    valid = false;
-  } else if (amount > STATE.balance) {
-    fieldError('f-retrait-amount', 'err-retrait-amount',
-      'Solde insuffisant. Disponible: ' + xaf(STATE.balance));
     valid = false;
   }
   if (!phone || phone.length < 8) {
@@ -279,21 +259,14 @@ function handleRetrait() {
   if (!valid) return;
 
   setLoadingBtn('btn-retrait', true);
-
   setTimeout(() => {
-    STATE.balance -= amount;
-    STATE.transactions.unshift({
-      id:     Date.now(),
-      type:   'retrait',
-      amount,
-      method,
-      phone,
-      date:   new Date().toISOString(),
-      status: 'success'
-    });
-    saveState();
-    updateUI();
+    const result = DB.retrait(email, amount, method, phone);
     setLoadingBtn('btn-retrait', false);
+    if (result.error) {
+      fieldError('f-retrait-amount', 'err-retrait-amount', result.error);
+      return;
+    }
+    updateUI();
     closeModal('retrait');
     if (amountEl) amountEl.value = '';
     if (phoneEl)  phoneEl.value  = '';
@@ -307,11 +280,12 @@ function handleRetrait() {
 let _buyData = { po: '', price: 0, profit: 0 };
 
 function openBuyModal(po, price, profit) {
+  const user = DB.getSession();
   _buyData = { po, price, profit };
-  document.getElementById('buy-modal-title').textContent = po + ' — ' + po.replace('PO No.', 'Plan ');
+  document.getElementById('buy-modal-title').textContent  = po + ' — ' + po.replace('PO No.', 'Plan ');
   document.getElementById('buy-modal-price').textContent  = xaf(price);
   document.getElementById('buy-modal-profit').textContent = xaf(profit) + ' / jour';
-  document.getElementById('buy-modal-balance').textContent = xaf(STATE.balance);
+  document.getElementById('buy-modal-balance').textContent = xaf(user ? user.balance : 0);
   document.getElementById('f-buy-qty').value = 1;
   document.getElementById('err-buy').textContent = '';
   updateBuyTotal();
@@ -336,39 +310,20 @@ function handleBuy() {
   const errEl = document.getElementById('err-buy');
   if (errEl) errEl.textContent = '';
 
-  const qty   = parseInt(document.getElementById('f-buy-qty')?.value) || 1;
-  const total = qty * _buyData.price;
+  const email = currentUserEmail();
+  if (!email) return;
 
-  if (total > STATE.balance) {
-    if (errEl) errEl.textContent = 'Solde insuffisant. Rechargez d\'abord votre compte.';
-    return;
-  }
+  const qty = parseInt(document.getElementById('f-buy-qty')?.value) || 1;
 
   setLoadingBtn('btn-buy', true);
-
   setTimeout(() => {
-    STATE.balance -= total;
-    STATE.portfolio.unshift({
-      id:           Date.now(),
-      po:           _buyData.po,
-      qty,
-      price:        _buyData.price,
-      totalPaid:    total,
-      dailyProfit:  _buyData.profit * qty,
-      purchaseDate: new Date().toISOString(),
-      daysLeft:     365
-    });
-    STATE.transactions.unshift({
-      id:     Date.now(),
-      type:   'achat',
-      amount: total,
-      label:  _buyData.po + (qty > 1 ? ' ×' + qty : ''),
-      date:   new Date().toISOString(),
-      status: 'success'
-    });
-    saveState();
-    updateUI();
+    const result = DB.buyPlan(email, _buyData.po, _buyData.price, _buyData.profit, qty);
     setLoadingBtn('btn-buy', false);
+    if (result.error) {
+      if (errEl) errEl.textContent = result.error;
+      return;
+    }
+    updateUI();
     closeModal('buy');
     showPage('project');
     switchProjectTab('achat');
@@ -381,42 +336,39 @@ function handleBuy() {
 ═══════════════════════════════════════════ */
 function handleTransfer() {
   clearErrors();
+  const fromEmail = currentUserEmail();
+  if (!fromEmail) return;
+
   const emailEl  = document.getElementById('f-transfer-email');
   const amountEl = document.getElementById('f-transfer-amount');
 
-  const email  = emailEl?.value.trim();
-  const amount = parseFloat(amountEl?.value);
+  const toEmail = emailEl?.value.trim();
+  const amount  = parseFloat(amountEl?.value);
 
   let valid = true;
-
-  if (!email || !email.includes('@')) {
+  if (!toEmail || !toEmail.includes('@')) {
     fieldError('f-transfer-email', 'err-transfer-email', 'Adresse email invalide');
     valid = false;
   }
   if (!amount || amount < 1000) {
     fieldError('f-transfer-amount', 'err-transfer-amount', 'Montant minimum: 1 000 XAF');
     valid = false;
-  } else if (amount > STATE.balance) {
-    fieldError('f-transfer-amount', 'err-transfer-amount', 'Solde insuffisant');
-    valid = false;
   }
   if (!valid) return;
 
   setLoadingBtn('btn-transfer', true);
   setTimeout(() => {
-    STATE.balance -= amount;
-    STATE.transactions.unshift({
-      id: Date.now(), type: 'retrait', amount,
-      label: 'Transfert → ' + email,
-      date: new Date().toISOString(), status: 'success'
-    });
-    saveState();
-    updateUI();
+    const result = DB.transfer(fromEmail, toEmail, amount);
     setLoadingBtn('btn-transfer', false);
+    if (result.error) {
+      fieldError('f-transfer-email', 'err-transfer-email', result.error);
+      return;
+    }
+    updateUI();
     closeModal('transfer');
     if (emailEl)  emailEl.value  = '';
     if (amountEl) amountEl.value = '';
-    showSuccess('Transfert envoyé !', xaf(amount) + ' → ' + email);
+    showSuccess('Transfert envoyé !', xaf(amount) + ' → ' + toEmail);
   }, 2000);
 }
 
@@ -424,18 +376,23 @@ function handleTransfer() {
    PASSWORD
 ═══════════════════════════════════════════ */
 function handlePassword() {
-  const cur    = document.getElementById('f-pwd-current')?.value;
-  const next   = document.getElementById('f-pwd-new')?.value;
-  const conf   = document.getElementById('f-pwd-confirm')?.value;
-  const errEl  = document.getElementById('err-pwd');
+  const email = currentUserEmail();
+  if (!email) return;
 
-  if (!cur || cur.length < 4) { if (errEl) errEl.textContent = 'Mot de passe actuel requis'; return; }
+  const cur   = document.getElementById('f-pwd-current')?.value;
+  const next  = document.getElementById('f-pwd-new')?.value;
+  const conf  = document.getElementById('f-pwd-confirm')?.value;
+  const errEl = document.getElementById('err-pwd');
+
+  if (!cur || cur.length < 4)   { if (errEl) errEl.textContent = 'Mot de passe actuel requis'; return; }
   if (!next || next.length < 6) { if (errEl) errEl.textContent = 'Minimum 6 caractères'; return; }
-  if (next !== conf) { if (errEl) errEl.textContent = 'Les mots de passe ne correspondent pas'; return; }
+  if (next !== conf)             { if (errEl) errEl.textContent = 'Les mots de passe ne correspondent pas'; return; }
 
   setLoadingBtn('btn-pwd', true);
   setTimeout(() => {
+    const result = DB.updatePassword(email, cur, next);
     setLoadingBtn('btn-pwd', false);
+    if (result.error) { if (errEl) errEl.textContent = result.error; return; }
     closeModal('password');
     showSuccess('Mot de passe modifié !', 'Votre sécurité est renforcée');
   }, 1500);
@@ -454,22 +411,22 @@ function filterTx(filter, btn) {
 }
 
 function renderTransactions(filter) {
+  const email     = currentUserEmail();
   const container = document.getElementById('transactions-list');
   if (!container) return;
 
-  const list = filter === 'all'
-    ? STATE.transactions
-    : STATE.transactions.filter(t => t.type === filter);
+  const all  = email ? DB.getTransactions(email) : [];
+  const list = filter === 'all' ? all : all.filter(t => t.type === filter);
 
   if (list.length === 0) {
     container.innerHTML = '<div class="tx-empty"><i class="fa fa-inbox"></i><p>Aucune transaction</p></div>';
     return;
   }
 
-  const icons    = { recharge: 'fa-plus-circle', retrait: 'fa-circle-down', achat: 'fa-gem' };
-  const colors   = { recharge: 'tx-green', retrait: 'tx-red', achat: 'tx-gold' };
-  const labels   = { recharge: 'Recharge', retrait: 'Retrait', achat: 'Achat' };
-  const signs    = { recharge: '+', retrait: '−', achat: '−' };
+  const icons  = { recharge: 'fa-plus-circle', retrait: 'fa-circle-down', achat: 'fa-gem' };
+  const colors = { recharge: 'tx-green', retrait: 'tx-red', achat: 'tx-gold' };
+  const labels = { recharge: 'Recharge', retrait: 'Retrait', achat: 'Achat' };
+  const signs  = { recharge: '+', retrait: '−', achat: '−' };
 
   container.innerHTML = list.map(tx => `
     <div class="tx-item">
@@ -495,18 +452,21 @@ const thumbs = ['mine-thumb-1', 'mine-thumb-2', 'mine-thumb-3', 'mine-thumb-4'];
 const poIdx  = { 'PO No.1': 0, 'PO No.2': 1, 'PO No.3': 2, 'PO No.4': 3 };
 
 function renderPortfolio() {
-  const list    = document.getElementById('portfolio-list');
-  const empty   = document.getElementById('portfolio-empty');
+  const email = currentUserEmail();
+  const list  = document.getElementById('portfolio-list');
+  const empty = document.getElementById('portfolio-empty');
   if (!list) return;
 
-  if (STATE.portfolio.length === 0) {
-    list.innerHTML  = '';
+  const portfolio = email ? DB.getPortfolio(email) : [];
+
+  if (portfolio.length === 0) {
+    list.innerHTML = '';
     if (empty) empty.style.display = 'flex';
     return;
   }
   if (empty) empty.style.display = 'none';
 
-  list.innerHTML = STATE.portfolio.map(item => {
+  list.innerHTML = portfolio.map(item => {
     const thumb = thumbs[poIdx[item.po] ?? 0];
     const pct   = Math.round(((365 - item.daysLeft) / 365) * 100);
     return `
@@ -538,14 +498,42 @@ function renderPortfolio() {
 }
 
 /* ═══════════════════════════════════════════
-   INVITE COPY
+   TEAM STATS RENDERING
 ═══════════════════════════════════════════ */
+function renderTeamStats() {
+  const email = currentUserEmail();
+  if (!email) return;
+  const stats = DB.getTeamStats(email);
+  const set   = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('team-size',      stats.size);
+  set('team-recharge',  xaf(stats.totalRecharge));
+  set('team-new',       stats.newThisMonth);
+  set('team-first-rec', stats.firstRecharge);
+}
+
+/* ═══════════════════════════════════════════
+   INVITE / COPY CODE
+═══════════════════════════════════════════ */
+function copyMyCode() {
+  const user = DB.getSession();
+  const code = user?.inviteCode || '';
+  if (!code) return;
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(code)
+      .then(() => showToast('✓ Code copié : ' + code))
+      .catch(() => showToast(code));
+  } else {
+    showToast(code);
+  }
+}
+
 function copyInviteLink() {
   const input = document.getElementById('invite-link-input');
   if (!input) return;
+  const val = input.value || '';
   if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(input.value)
-      .then(() => showToast('✓ Lien copié dans le presse-papiers !'))
+    navigator.clipboard.writeText(val)
+      .then(() => showToast('✓ Code copié dans le presse-papiers !'))
       .catch(() => legacyCopy(input));
   } else {
     legacyCopy(input);
@@ -555,8 +543,16 @@ function copyInviteLink() {
 function legacyCopy(input) {
   input.select();
   input.setSelectionRange(0, 99999);
-  try { document.execCommand('copy'); showToast('✓ Lien copié !'); }
-  catch (_) { showToast('Copiez manuellement le lien.'); }
+  try { document.execCommand('copy'); showToast('✓ Copié !'); }
+  catch (_) { showToast('Copiez manuellement le code.'); }
+}
+
+/* ═══════════════════════════════════════════
+   LOGOUT
+═══════════════════════════════════════════ */
+function logout() {
+  DB.clearSession();
+  window.location.href = 'auth.html';
 }
 
 /* ═══════════════════════════════════════════
@@ -579,7 +575,8 @@ function toggleLang() {
    INIT
 ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  loadState();
+  const sess = DB.getSession();
+  if (!sess) { window.location.href = 'auth.html'; return; }
   updateUI();
   showPage('home');
 });
