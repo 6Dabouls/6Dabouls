@@ -1,0 +1,81 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: 'class',
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#e8eef6',
+          100: '#c5d4e8',
+          200: '#9fb8d9',
+          300: '#789bca',
+          400: '#5985bf',
+          500: '#3a6fb4',
+          600: '#2d5a99',
+          700: '#1e3a5f',
+          800: '#162d4a',
+          900: '#0e1f35',
+          DEFAULT: '#1e3a5f',
+        },
+        secondary: {
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+          DEFAULT: '#f59e0b',
+        },
+        success: {
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0',
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          DEFAULT: '#10b981',
+        },
+        danger: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          DEFAULT: '#ef4444',
+        },
+        neero: {
+          blue: '#1e3a5f',
+          orange: '#f59e0b',
+          light: '#f0f4f8',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        card: '0 2px 8px rgba(30, 58, 95, 0.08)',
+        'card-hover': '0 8px 24px rgba(30, 58, 95, 0.15)',
+        float: '0 20px 60px rgba(30, 58, 95, 0.2)',
+      },
+      backgroundImage: {
+        'gradient-neero': 'linear-gradient(135deg, #1e3a5f 0%, #2d5a99 50%, #3a6fb4 100%)',
+        'gradient-card': 'linear-gradient(135deg, #1e3a5f 0%, #162d4a 100%)',
+      },
+    },
+  },
+  plugins: [],
+}
