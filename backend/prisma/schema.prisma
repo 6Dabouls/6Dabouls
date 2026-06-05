@@ -1,0 +1,363 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  COMPLIANCE
+  FINANCE
+  SUPPORT
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  CLOSED
+}
+
+enum KYCLevel {
+  NONE
+  LEVEL_1
+  LEVEL_2
+  LEVEL_3
+}
+
+enum KYCStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum KYCDocumentType {
+  NATIONAL_ID
+  PASSPORT
+  DRIVERS_LICENSE
+  SELFIE
+  PROOF_OF_ADDRESS
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER_IN
+  TRANSFER_OUT
+  PAYMENT
+  REFUND
+  FEE
+  CURRENCY_CONVERSION
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REVERSED
+}
+
+enum CardType {
+  VIRTUAL
+  PHYSICAL
+}
+
+enum CardStatus {
+  ACTIVE
+  BLOCKED
+  EXPIRED
+  CANCELLED
+  PENDING_ACTIVATION
+}
+
+enum NotificationType {
+  DEPOSIT_RECEIVED
+  WITHDRAWAL_COMPLETED
+  TRANSFER_SENT
+  TRANSFER_RECEIVED
+  PAYMENT_COMPLETED
+  CARD_CREATED
+  SUSPICIOUS_ACTIVITY
+  KYC_APPROVED
+  KYC_REJECTED
+  SYSTEM
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id                String      @id @default(uuid())
+  email             String?     @unique
+  phone             String?     @unique
+  password          String
+  role              UserRole    @default(USER)
+  status            UserStatus  @default(PENDING_VERIFICATION)
+  kycLevel          KYCLevel    @default(NONE)
+  twoFAEnabled      Boolean     @default(false)
+  twoFASecret       String?
+  emailVerified     Boolean     @default(false)
+  phoneVerified     Boolean     @default(false)
+  lastLoginAt       DateTime?
+  lastLoginIp       String?
+  failedLoginCount  Int         @default(0)
+  lockedUntil       DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  profile           Profile?
+  wallets           Wallet[]
+  kycDocuments      KYCDocument[]
+  cards             Card[]
+  notifications     Notification[]
+  supportTickets    SupportTicket[]
+  auditLogs         AuditLog[]
+  otpCodes          OTPCode[]
+  refreshTokens     RefreshToken[]
+  sentTransactions  Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Profile {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  firstName       String?
+  lastName        String?
+  dateOfBirth     DateTime?
+  nationality     String?
+  address         String?
+  city            String?
+  country         String?
+  postalCode      String?
+  profilePicture  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model KYCDocument {
+  id              String          @id @default(uuid())
+  userId          String
+  type            KYCDocumentType
+  fileUrl         String
+  status          KYCStatus       @default(PENDING)
+  rejectionReason String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Wallet {
+  id              String        @id @default(uuid())
+  userId          String
+  currency        String        @default("XOF")
+  balance         Decimal       @default(0) @db.Decimal(20, 8)
+  frozenBalance   Decimal       @default(0) @db.Decimal(20, 8)
+  status          WalletStatus  @default(ACTIVE)
+  dailyLimit      Decimal       @default(1000000) @db.Decimal(20, 8)
+  monthlyLimit    Decimal       @default(10000000) @db.Decimal(20, 8)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sentTransactions Transaction[] @relation("FromWallet")
+  receivedTransactions Transaction[] @relation("ToWallet")
+
+  @@unique([userId, currency])
+  @@index([userId])
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  reference       String            @unique @default(uuid())
+  fromWalletId    String?
+  toWalletId      String?
+  fromUserId      String?
+  toUserId        String?
+  amount          Decimal           @db.Decimal(20, 8)
+  fee             Decimal           @default(0) @db.Decimal(20, 8)
+  currency        String
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  description     String?
+  externalRef     String?
+  metadata        Json?
+  ipAddress       String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  fromWallet      Wallet?           @relation("FromWallet", fields: [fromWalletId], references: [id])
+  toWallet        Wallet?           @relation("ToWallet", fields: [toWalletId], references: [id])
+  fromUser        User?             @relation("SentTransactions", fields: [fromUserId], references: [id])
+  toUser          User?             @relation("ReceivedTransactions", fields: [toUserId], references: [id])
+
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([fromWalletId])
+  @@index([toWalletId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Card {
+  id              String      @id @default(uuid())
+  userId          String
+  type            CardType
+  cardNumber      String      @unique
+  maskedNumber    String
+  cvv             String
+  expiryMonth     Int
+  expiryYear      Int
+  cardholderName  String
+  status          CardStatus  @default(ACTIVE)
+  dailyLimit      Decimal     @default(500000) @db.Decimal(20, 8)
+  currency        String      @default("XOF")
+  billingAddress  String?
+  deliveryAddress String?
+  trackingNumber  String?
+  activatedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  read        Boolean          @default(false)
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+}
+
+model OTPCode {
+  id          String    @id @default(uuid())
+  userId      String
+  code        String
+  type        String
+  expiresAt   DateTime
+  used        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([code])
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  userId      String
+  token       String    @unique
+  expiresAt   DateTime
+  revoked     Boolean   @default(false)
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model ExchangeRate {
+  id            String    @id @default(uuid())
+  fromCurrency  String
+  toCurrency    String
+  rate          Decimal   @db.Decimal(20, 8)
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([fromCurrency, toCurrency])
+}
+
+model SupportTicket {
+  id          String          @id @default(uuid())
+  userId      String
+  subject     String
+  status      TicketStatus    @default(OPEN)
+  priority    TicketPriority  @default(MEDIUM)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id          String        @id @default(uuid())
+  ticketId    String
+  senderId    String
+  senderRole  UserRole
+  message     String
+  attachments String[]
+  createdAt   DateTime      @default(now())
+
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model AuditLog {
+  id          String    @id @default(uuid())
+  userId      String?
+  action      String
+  resource    String?
+  resourceId  String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  user        User?     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
