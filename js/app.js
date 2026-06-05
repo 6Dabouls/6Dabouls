@@ -1,32 +1,20 @@
 'use strict';
 
-/* ═══════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════ */
-function currentUserEmail() {
-  const sess = DB.getSession();
-  return sess ? sess.email : null;
-}
-
-function xaf(n) {
-  return Number(n).toLocaleString('fr-FR') + ' XAF';
-}
-
+/* ─── Formatting ─── */
+function xaf(n) { return Number(n).toLocaleString('fr-FR') + ' XAF'; }
 function shortDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) +
     ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
-/* ═══════════════════════════════════════════
-   UI UPDATES
-═══════════════════════════════════════════ */
-function updateUI() {
-  const user = DB.getSession();
-  if (!user) return;
+/* ─── UI update (reads from cached user) ─── */
+async function updateUI() {
+  const r = await API.getUser();
+  if (!r.success) return;
+  const user = r.user;
 
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
   set('ui-balance',   Number(user.balance).toLocaleString('fr-FR'));
   set('ui-recharged', Number(user.totalRecharged).toLocaleString('fr-FR'));
   set('home-balance',   xaf(user.balance));
@@ -34,7 +22,6 @@ function updateUI() {
   set('ui-retrait-balance',  xaf(user.balance));
   set('ui-transfer-balance', xaf(user.balance));
   set('buy-modal-balance',   xaf(user.balance));
-
   set('profile-name-display',  user.name  || '');
   set('profile-email-display', user.email || '');
   set('my-invite-code',        user.inviteCode || '—');
@@ -42,13 +29,23 @@ function updateUI() {
   const invInput = document.getElementById('invite-link-input');
   if (invInput) invInput.value = user.inviteCode || '';
 
+  const adminLink = document.getElementById('menu-admin-link');
+  if (adminLink) adminLink.style.display = user.isAdmin ? 'flex' : 'none';
+
   renderPortfolio();
   renderTeamStats();
 }
 
-/* ═══════════════════════════════════════════
-   PAGE NAVIGATION
-═══════════════════════════════════════════ */
+function updateBalanceInUI(newBalance) {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('ui-balance',          Number(newBalance).toLocaleString('fr-FR'));
+  set('home-balance',        xaf(newBalance));
+  set('ui-retrait-balance',  xaf(newBalance));
+  set('ui-transfer-balance', xaf(newBalance));
+  set('buy-modal-balance',   xaf(newBalance));
+}
+
+/* ─── Navigation ─── */
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -58,9 +55,6 @@ function showPage(name) {
   if (nav)  nav.classList.add('active');
 }
 
-/* ═══════════════════════════════════════════
-   PROJECT TAB SWITCHER
-═══════════════════════════════════════════ */
 function switchProjectTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -70,16 +64,12 @@ function switchProjectTab(name) {
   if (panel) panel.classList.add('active');
 }
 
-/* ═══════════════════════════════════════════
-   MODALS
-═══════════════════════════════════════════ */
+/* ─── Modals ─── */
 function openModal(type) {
   const modal = document.getElementById('modal-' + type);
   if (!modal) return;
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
-  if (type === 'retrait')      updateRetaitBalance();
-  if (type === 'transfer')     updateTransferBalance();
   if (type === 'transactions') renderTransactions('all');
 }
 
@@ -95,19 +85,6 @@ function clearErrors() {
   document.querySelectorAll('.field-input').forEach(f => f.classList.remove('is-error'));
 }
 
-function updateRetaitBalance() {
-  const user = DB.getSession();
-  const el   = document.getElementById('ui-retrait-balance');
-  if (el && user) el.textContent = xaf(user.balance);
-}
-
-function updateTransferBalance() {
-  const user = DB.getSession();
-  const el   = document.getElementById('ui-transfer-balance');
-  if (el && user) el.textContent = xaf(user.balance);
-}
-
-/* ── Close on Escape ── */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
@@ -115,7 +92,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ── Swipe down to close ── */
 (function () {
   let startY = 0;
   document.addEventListener('touchstart', e => {
@@ -131,23 +107,19 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
-/* ═══════════════════════════════════════════
-   FORM HELPERS
-═══════════════════════════════════════════ */
+/* ─── Form helpers ─── */
 function fieldError(fieldId, errId, msg) {
   const f = document.getElementById(fieldId);
   const e = document.getElementById(errId);
   if (f) f.classList.add('is-error');
   if (e) e.textContent = msg;
 }
-
 function clearField(fieldId, errId) {
   const f = document.getElementById(fieldId);
   const e = document.getElementById(errId);
   if (f) f.classList.remove('is-error');
   if (e) e.textContent = '';
 }
-
 function setPreset(type, amount) {
   const el = document.getElementById('f-' + type + '-amount');
   if (el) { el.value = amount; clearField('f-' + type + '-amount', 'err-' + type + '-amount'); }
@@ -168,9 +140,6 @@ function setLoadingBtn(id, loading) {
   }
 }
 
-/* ═══════════════════════════════════════════
-   SUCCESS OVERLAY
-═══════════════════════════════════════════ */
 function showSuccess(title, sub) {
   const overlay = document.getElementById('success-overlay');
   const msg     = document.getElementById('success-msg');
@@ -179,12 +148,9 @@ function showSuccess(title, sub) {
   if (msg)   msg.textContent   = title;
   if (subEl) subEl.textContent = sub || '';
   overlay.style.display = 'flex';
-  setTimeout(() => { overlay.style.display = 'none'; }, 2200);
+  setTimeout(() => { overlay.style.display = 'none'; }, 2500);
 }
 
-/* ═══════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════ */
 function showToast(msg, ms) {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -193,94 +159,147 @@ function showToast(msg, ms) {
   setTimeout(() => t.classList.remove('show'), ms || 2800);
 }
 
-/* ═══════════════════════════════════════════
-   RECHARGE
-═══════════════════════════════════════════ */
-function handleRecharge() {
-  clearErrors();
-  const email = currentUserEmail();
-  if (!email) return;
+/* ═══════════════════════════════════════
+   RECHARGE — Mobile Money flow
+═══════════════════════════════════════ */
+let _pollInterval = null;
 
+function updatePaymentInstructions() {
+  const method = document.getElementById('f-recharge-method')?.value || 'mtn';
+  const txt    = document.getElementById('payment-instructions-text');
+  if (!txt) return;
+  const map = {
+    mtn:    'Une notification USSD sera envoyée sur votre téléphone MTN. Composez votre code PIN pour approuver.',
+    orange: 'Une notification sera envoyée sur votre téléphone Orange. Approuvez avec votre code PIN Orange Money.',
+    bank:   'Virement manuel — notre équipe créditera votre compte sous 1-2 jours ouvrables.'
+  };
+  txt.textContent = map[method] || map.mtn;
+}
+
+function resetRechargeStep() {
+  clearInterval(_pollInterval);
+  document.getElementById('recharge-step-1').style.display = '';
+  document.getElementById('recharge-step-2').style.display = 'none';
+  document.getElementById('recharge-modal-title').textContent = 'Recharger mon compte';
+}
+
+async function handleRecharge() {
+  clearErrors();
   const amountEl = document.getElementById('f-recharge-amount');
   const phoneEl  = document.getElementById('f-recharge-phone');
   const method   = document.getElementById('f-recharge-method')?.value || 'mtn';
-
-  const amount = parseFloat(amountEl?.value);
-  const phone  = phoneEl?.value.trim();
+  const amount   = parseFloat(amountEl?.value);
+  const phone    = phoneEl?.value.trim();
 
   let valid = true;
-  if (!amount || amount < 1000) {
-    fieldError('f-recharge-amount', 'err-recharge-amount', 'Montant minimum: 1 000 XAF');
-    valid = false;
-  }
-  if (!phone || phone.length < 8) {
-    fieldError('f-recharge-phone', 'err-recharge-phone', 'Numéro invalide (8-9 chiffres)');
-    valid = false;
-  }
+  if (!amount || amount < 500) { fieldError('f-recharge-amount', 'err-recharge-amount', 'Montant minimum: 500 XAF'); valid = false; }
+  if (!phone || phone.length < 8) { fieldError('f-recharge-phone', 'err-recharge-phone', 'Numéro invalide (8-9 chiffres)'); valid = false; }
   if (!valid) return;
 
   setLoadingBtn('btn-recharge', true);
-  setTimeout(() => {
-    const result = DB.recharge(email, amount, method, phone);
-    setLoadingBtn('btn-recharge', false);
-    if (result.error) { showToast(result.error); return; }
-    updateUI();
-    closeModal('recharge');
-    if (amountEl) amountEl.value = '';
-    if (phoneEl)  phoneEl.value  = '';
-    showSuccess('Recharge réussie !', xaf(amount) + ' ajouté à votre solde');
-  }, 2200);
+
+  const result = await API.initRecharge(amount, method, phone);
+  setLoadingBtn('btn-recharge', false);
+
+  if (result.error) { showToast(result.error); return; }
+
+  /* ── Afficher l'étape 2 ── */
+  const providerNames = { mtn: 'MTN Mobile Money', orange: 'Orange Money', bank: 'Virement bancaire' };
+  const providerIcons = { mtn: '📱', orange: '🟠', bank: '🏦' };
+  const waitDescs = {
+    mtn:    'Approuvez la demande MTN MoMo sur votre téléphone en composant votre code PIN.',
+    orange: 'Approuvez la demande Orange Money sur votre téléphone.',
+    bank:   'Effectuez le virement et notre équipe créditera votre compte sous 24h.'
+  };
+
+  document.getElementById('recharge-step-1').style.display = 'none';
+  document.getElementById('recharge-step-2').style.display = '';
+  document.getElementById('recharge-modal-title').textContent = providerNames[method] || 'Paiement';
+
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('mm-provider-icon', providerIcons[method] || '📱');
+  set('mm-waiting-title', 'Demande envoyée !');
+  set('mm-waiting-desc',  waitDescs[method] || waitDescs.mtn);
+  set('mm-display-amount', xaf(amount));
+  set('mm-display-phone',  '+237 ' + phone);
+
+  if (result.ussd_code) {
+    const ussd = document.getElementById('mm-ussd-hint');
+    if (ussd) { ussd.textContent = 'Code USSD : ' + result.ussd_code; ussd.style.display = 'block'; }
+  }
+
+  /* ── Countdown 30s ── */
+  let remaining = 30;
+  const fillEl = document.getElementById('mm-countdown-fill');
+  const secEl  = document.getElementById('mm-countdown');
+  if (fillEl) fillEl.style.width = '100%';
+
+  /* ── Polling statut Campay toutes les 3s ── */
+  const reference = result.reference;
+  let attempts    = 0;
+
+  clearInterval(_pollInterval);
+  _pollInterval = setInterval(async () => {
+    remaining = Math.max(0, remaining - 1);
+    if (secEl)  secEl.textContent = remaining;
+    if (fillEl) fillEl.style.width = (remaining / 30 * 100) + '%';
+
+    attempts++;
+    if (attempts % 3 === 0 || remaining === 0) {
+      const status = await API.checkPaymentStatus(reference);
+      if (status.status === 'SUCCESSFUL') {
+        clearInterval(_pollInterval);
+        updateBalanceInUI(status.balance);
+        closeModal('recharge');
+        resetRechargeStep();
+        if (amountEl) amountEl.value = '';
+        if (phoneEl)  phoneEl.value  = '';
+        showSuccess('Paiement confirmé ! 🎉', xaf(amount) + ' ajouté à votre solde');
+      } else if (status.status === 'FAILED' || remaining === 0) {
+        clearInterval(_pollInterval);
+        resetRechargeStep();
+        showToast(status.status === 'FAILED' ? 'Paiement refusé ou annulé.' : 'Délai dépassé. Réessayez.');
+      }
+    }
+  }, 1000);
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    RETRAIT
-═══════════════════════════════════════════ */
-function handleRetrait() {
+═══════════════════════════════════════ */
+async function handleRetrait() {
   clearErrors();
-  const email = currentUserEmail();
-  if (!email) return;
-
   const amountEl = document.getElementById('f-retrait-amount');
   const phoneEl  = document.getElementById('f-retrait-phone');
   const method   = document.getElementById('f-retrait-method')?.value || 'mtn';
-
-  const amount = parseFloat(amountEl?.value);
-  const phone  = phoneEl?.value.trim();
+  const amount   = parseFloat(amountEl?.value);
+  const phone    = phoneEl?.value.trim();
 
   let valid = true;
-  if (!amount || amount < 1000) {
-    fieldError('f-retrait-amount', 'err-retrait-amount', 'Montant minimum: 1 000 XAF');
-    valid = false;
-  }
-  if (!phone || phone.length < 8) {
-    fieldError('f-retrait-phone', 'err-retrait-phone', 'Numéro invalide (8-9 chiffres)');
-    valid = false;
-  }
+  if (!amount || amount < 500)    { fieldError('f-retrait-amount', 'err-retrait-amount', 'Montant minimum: 500 XAF'); valid = false; }
+  if (!phone || phone.length < 8) { fieldError('f-retrait-phone',  'err-retrait-phone',  'Numéro invalide (8-9 chiffres)'); valid = false; }
   if (!valid) return;
 
   setLoadingBtn('btn-retrait', true);
-  setTimeout(() => {
-    const result = DB.retrait(email, amount, method, phone);
-    setLoadingBtn('btn-retrait', false);
-    if (result.error) {
-      fieldError('f-retrait-amount', 'err-retrait-amount', result.error);
-      return;
-    }
-    updateUI();
-    closeModal('retrait');
-    if (amountEl) amountEl.value = '';
-    if (phoneEl)  phoneEl.value  = '';
-    showSuccess('Retrait en cours !', xaf(amount) + ' en route vers +237 ' + phone);
-  }, 2500);
+  const result = await API.retrait(amount, method, phone);
+  setLoadingBtn('btn-retrait', false);
+
+  if (result.error) { fieldError('f-retrait-amount', 'err-retrait-amount', result.error); return; }
+
+  updateBalanceInUI(result.balance);
+  closeModal('retrait');
+  if (amountEl) amountEl.value = '';
+  if (phoneEl)  phoneEl.value  = '';
+  showSuccess('Retrait en cours !', xaf(amount) + ' en route vers +237 ' + phone);
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    BUY PLAN
-═══════════════════════════════════════════ */
+═══════════════════════════════════════ */
 let _buyData = { po: '', price: 0, profit: 0 };
 
 function openBuyModal(po, price, profit) {
-  const user = DB.getSession();
+  const user = API.getCachedUser();
   _buyData = { po, price, profit };
   document.getElementById('buy-modal-title').textContent  = po + ' — ' + po.replace('PO No.', 'Plan ');
   document.getElementById('buy-modal-price').textContent  = xaf(price);
@@ -298,7 +317,6 @@ function changeQty(delta) {
   el.value = Math.max(1, (parseInt(el.value) || 1) + delta);
   updateBuyTotal();
 }
-
 function updateBuyTotal() {
   const qty   = parseInt(document.getElementById('f-buy-qty')?.value) || 1;
   const total = qty * _buyData.price;
@@ -306,79 +324,58 @@ function updateBuyTotal() {
   if (el) el.textContent = xaf(total);
 }
 
-function handleBuy() {
+async function handleBuy() {
   const errEl = document.getElementById('err-buy');
   if (errEl) errEl.textContent = '';
-
-  const email = currentUserEmail();
-  if (!email) return;
 
   const qty = parseInt(document.getElementById('f-buy-qty')?.value) || 1;
 
   setLoadingBtn('btn-buy', true);
-  setTimeout(() => {
-    const result = DB.buyPlan(email, _buyData.po, _buyData.price, _buyData.profit, qty);
-    setLoadingBtn('btn-buy', false);
-    if (result.error) {
-      if (errEl) errEl.textContent = result.error;
-      return;
-    }
-    updateUI();
-    closeModal('buy');
-    showPage('project');
-    switchProjectTab('achat');
-    showSuccess('Achat confirmé !', _buyData.po + ' — ' + xaf(_buyData.profit * qty) + ' / jour');
-  }, 2000);
+  const result = await API.buyPlan(_buyData.po, _buyData.price, _buyData.profit, qty);
+  setLoadingBtn('btn-buy', false);
+
+  if (result.error) { if (errEl) errEl.textContent = result.error; return; }
+
+  updateBalanceInUI(result.balance);
+  closeModal('buy');
+  showPage('project');
+  switchProjectTab('achat');
+  renderPortfolio();
+  showSuccess('Achat confirmé !', _buyData.po + ' — ' + xaf(_buyData.profit * qty) + ' / jour');
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    TRANSFER
-═══════════════════════════════════════════ */
-function handleTransfer() {
+═══════════════════════════════════════ */
+async function handleTransfer() {
   clearErrors();
-  const fromEmail = currentUserEmail();
-  if (!fromEmail) return;
-
   const emailEl  = document.getElementById('f-transfer-email');
   const amountEl = document.getElementById('f-transfer-amount');
-
-  const toEmail = emailEl?.value.trim();
-  const amount  = parseFloat(amountEl?.value);
+  const toEmail  = emailEl?.value.trim();
+  const amount   = parseFloat(amountEl?.value);
 
   let valid = true;
-  if (!toEmail || !toEmail.includes('@')) {
-    fieldError('f-transfer-email', 'err-transfer-email', 'Adresse email invalide');
-    valid = false;
-  }
-  if (!amount || amount < 1000) {
-    fieldError('f-transfer-amount', 'err-transfer-amount', 'Montant minimum: 1 000 XAF');
-    valid = false;
-  }
+  if (!toEmail || !toEmail.includes('@')) { fieldError('f-transfer-email',  'err-transfer-email',  'Adresse email invalide'); valid = false; }
+  if (!amount || amount < 500)            { fieldError('f-transfer-amount', 'err-transfer-amount', 'Montant minimum: 500 XAF'); valid = false; }
   if (!valid) return;
 
   setLoadingBtn('btn-transfer', true);
-  setTimeout(() => {
-    const result = DB.transfer(fromEmail, toEmail, amount);
-    setLoadingBtn('btn-transfer', false);
-    if (result.error) {
-      fieldError('f-transfer-email', 'err-transfer-email', result.error);
-      return;
-    }
-    updateUI();
-    closeModal('transfer');
-    if (emailEl)  emailEl.value  = '';
-    if (amountEl) amountEl.value = '';
-    showSuccess('Transfert envoyé !', xaf(amount) + ' → ' + toEmail);
-  }, 2000);
+  const result = await API.transfer(toEmail, amount);
+  setLoadingBtn('btn-transfer', false);
+
+  if (result.error) { fieldError('f-transfer-email', 'err-transfer-email', result.error); return; }
+
+  updateBalanceInUI(result.balance);
+  closeModal('transfer');
+  if (emailEl)  emailEl.value  = '';
+  if (amountEl) amountEl.value = '';
+  showSuccess('Transfert envoyé !', xaf(amount) + ' → ' + toEmail);
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    PASSWORD
-═══════════════════════════════════════════ */
-function handlePassword() {
-  const email = currentUserEmail();
-  if (!email) return;
-
+═══════════════════════════════════════ */
+async function handlePassword() {
   const cur   = document.getElementById('f-pwd-current')?.value;
   const next  = document.getElementById('f-pwd-new')?.value;
   const conf  = document.getElementById('f-pwd-confirm')?.value;
@@ -389,45 +386,39 @@ function handlePassword() {
   if (next !== conf)             { if (errEl) errEl.textContent = 'Les mots de passe ne correspondent pas'; return; }
 
   setLoadingBtn('btn-pwd', true);
-  setTimeout(() => {
-    const result = DB.updatePassword(email, cur, next);
-    setLoadingBtn('btn-pwd', false);
-    if (result.error) { if (errEl) errEl.textContent = result.error; return; }
-    closeModal('password');
-    showSuccess('Mot de passe modifié !', 'Votre sécurité est renforcée');
-  }, 1500);
+  const result = await API.updatePassword(cur, next);
+  setLoadingBtn('btn-pwd', false);
+
+  if (result.error) { if (errEl) errEl.textContent = result.error; return; }
+  closeModal('password');
+  showSuccess('Mot de passe modifié !', 'Votre sécurité est renforcée');
 }
 
-/* ═══════════════════════════════════════════
-   TRANSACTIONS RENDERING
-═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   TRANSACTIONS
+═══════════════════════════════════════ */
 let _currentFilter = 'all';
+let _allTx         = [];
 
 function filterTx(filter, btn) {
   _currentFilter = filter;
   document.querySelectorAll('.tx-filter').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  renderTransactions(filter);
+  renderTxList(filter);
 }
 
-function renderTransactions(filter) {
-  const email     = currentUserEmail();
+function renderTxList(filter) {
   const container = document.getElementById('transactions-list');
   if (!container) return;
-
-  const all  = email ? DB.getTransactions(email) : [];
-  const list = filter === 'all' ? all : all.filter(t => t.type === filter);
-
+  const list = filter === 'all' ? _allTx : _allTx.filter(t => t.type === filter);
   if (list.length === 0) {
     container.innerHTML = '<div class="tx-empty"><i class="fa fa-inbox"></i><p>Aucune transaction</p></div>';
     return;
   }
-
   const icons  = { recharge: 'fa-plus-circle', retrait: 'fa-circle-down', achat: 'fa-gem' };
   const colors = { recharge: 'tx-green', retrait: 'tx-red', achat: 'tx-gold' };
   const labels = { recharge: 'Recharge', retrait: 'Retrait', achat: 'Achat' };
   const signs  = { recharge: '+', retrait: '−', achat: '−' };
-
   container.innerHTML = list.map(tx => `
     <div class="tx-item">
       <div class="tx-icon-wrap ${colors[tx.type] || ''}">
@@ -439,25 +430,31 @@ function renderTransactions(filter) {
       </div>
       <div class="tx-right">
         <span class="tx-amount ${colors[tx.type] || ''}">${signs[tx.type]}${xaf(tx.amount)}</span>
-        <span class="tx-status ${tx.status}">${tx.status === 'success' ? 'Succès' : 'Echec'}</span>
+        <span class="tx-status ${tx.status}">${tx.status === 'success' ? 'Succès' : tx.status === 'pending' ? 'En cours' : 'Échec'}</span>
       </div>
     </div>
   `).join('');
 }
 
-/* ═══════════════════════════════════════════
-   PORTFOLIO RENDERING
-═══════════════════════════════════════════ */
+async function renderTransactions(filter) {
+  const r = await API.getTransactions();
+  _allTx  = r.transactions || [];
+  renderTxList(filter || _currentFilter);
+}
+
+/* ═══════════════════════════════════════
+   PORTFOLIO
+═══════════════════════════════════════ */
 const thumbs = ['mine-thumb-1', 'mine-thumb-2', 'mine-thumb-3', 'mine-thumb-4'];
 const poIdx  = { 'PO No.1': 0, 'PO No.2': 1, 'PO No.3': 2, 'PO No.4': 3 };
 
-function renderPortfolio() {
-  const email = currentUserEmail();
+async function renderPortfolio() {
   const list  = document.getElementById('portfolio-list');
   const empty = document.getElementById('portfolio-empty');
   if (!list) return;
 
-  const portfolio = email ? DB.getPortfolio(email) : [];
+  const r = await API.getPortfolio();
+  const portfolio = r.portfolio || [];
 
   if (portfolio.length === 0) {
     list.innerHTML = '';
@@ -475,21 +472,10 @@ function renderPortfolio() {
           <span class="po-hero-badge">${item.po}${item.qty > 1 ? ' ×' + item.qty : ''}</span>
         </div>
         <div class="port-body">
-          <div class="port-row">
-            <span>Bénéfice / jour</span>
-            <strong class="gold-text">${xaf(item.dailyProfit)}</strong>
-          </div>
-          <div class="port-row">
-            <span>Investi</span>
-            <strong>${xaf(item.totalPaid)}</strong>
-          </div>
-          <div class="port-row">
-            <span>Jours restants</span>
-            <strong>${item.daysLeft} / 365</strong>
-          </div>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar" style="width:${pct}%"></div>
-          </div>
+          <div class="port-row"><span>Bénéfice / jour</span><strong class="gold-text">${xaf(item.dailyProfit)}</strong></div>
+          <div class="port-row"><span>Investi</span><strong>${xaf(item.totalPaid)}</strong></div>
+          <div class="port-row"><span>Jours restants</span><strong>${item.daysLeft} / 365</strong></div>
+          <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
           <div class="port-date">Acheté le ${shortDate(item.purchaseDate)}</div>
         </div>
       </div>
@@ -497,71 +483,55 @@ function renderPortfolio() {
   }).join('');
 }
 
-/* ═══════════════════════════════════════════
-   TEAM STATS RENDERING
-═══════════════════════════════════════════ */
-function renderTeamStats() {
-  const email = currentUserEmail();
-  if (!email) return;
-  const stats = DB.getTeamStats(email);
-  const set   = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('team-size',      stats.size);
-  set('team-recharge',  xaf(stats.totalRecharge));
-  set('team-new',       stats.newThisMonth);
-  set('team-first-rec', stats.firstRecharge);
+/* ═══════════════════════════════════════
+   TEAM STATS
+═══════════════════════════════════════ */
+async function renderTeamStats() {
+  const r = await API.getTeam();
+  if (!r.success) return;
+  const s   = r.team;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('team-size',      s.size);
+  set('team-recharge',  xaf(s.totalRecharge));
+  set('team-new',       s.newThisMonth);
+  set('team-first-rec', s.firstRecharge);
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    INVITE / COPY CODE
-═══════════════════════════════════════════ */
+═══════════════════════════════════════ */
 function copyMyCode() {
-  const user = DB.getSession();
+  const user = API.getCachedUser();
   const code = user?.inviteCode || '';
   if (!code) return;
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(code)
-      .then(() => showToast('✓ Code copié : ' + code))
-      .catch(() => showToast(code));
-  } else {
-    showToast(code);
-  }
+  navigator.clipboard?.writeText(code)
+    .then(() => showToast('✓ Code copié : ' + code))
+    .catch(() => showToast(code));
 }
 
 function copyInviteLink() {
   const input = document.getElementById('invite-link-input');
   if (!input) return;
   const val = input.value || '';
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(val)
-      .then(() => showToast('✓ Code copié dans le presse-papiers !'))
-      .catch(() => legacyCopy(input));
-  } else {
-    legacyCopy(input);
-  }
+  navigator.clipboard?.writeText(val)
+    .then(() => showToast('✓ Code copié !'))
+    .catch(() => {
+      input.select(); input.setSelectionRange(0, 99999);
+      try { document.execCommand('copy'); showToast('✓ Copié !'); } catch (_) {}
+    });
 }
 
-function legacyCopy(input) {
-  input.select();
-  input.setSelectionRange(0, 99999);
-  try { document.execCommand('copy'); showToast('✓ Copié !'); }
-  catch (_) { showToast('Copiez manuellement le code.'); }
-}
-
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    LOGOUT
-═══════════════════════════════════════════ */
+═══════════════════════════════════════ */
 function logout() {
-  DB.clearSession();
-  window.location.href = 'auth.html';
+  API.logout();
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    LANG TOGGLE (demo)
-═══════════════════════════════════════════ */
-const LANGS = [
-  { flag: '🇫🇷', label: 'Français' },
-  { flag: '🇬🇧', label: 'English' }
-];
+═══════════════════════════════════════ */
+const LANGS = [{ flag: '🇫🇷', label: 'Français' }, { flag: '🇬🇧', label: 'English' }];
 let _langIdx = 0;
 function toggleLang() {
   _langIdx = (_langIdx + 1) % LANGS.length;
@@ -571,12 +541,15 @@ function toggleLang() {
   if (lb) lb.textContent = LANGS[_langIdx].label;
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════
    INIT
-═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  const sess = DB.getSession();
-  if (!sess) { window.location.href = 'auth.html'; return; }
-  updateUI();
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!API.isLoggedIn()) { window.location.href = 'auth.html'; return; }
+
+  const r = await API.getUser();
+  if (!r.success) { API.logout(); return; }
+
+  await updateUI();
   showPage('home');
 });

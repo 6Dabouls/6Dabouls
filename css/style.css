@@ -1530,3 +1530,152 @@ body {
 }
 .copy-code-btn:hover { color: #fff; }
 
+/* =========================================
+   Payment instructions hint
+   ========================================= */
+.payment-instructions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f0f8ff;
+  border: 1px solid #bee3f8;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #2b6cb0;
+  line-height: 1.5;
+}
+.payment-instructions i { color: #3182ce; flex-shrink: 0; margin-top: 1px; }
+
+/* =========================================
+   Mobile Money waiting UI
+   ========================================= */
+.mm-waiting-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 20px 20px 28px;
+}
+
+.mm-phone-anim {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mm-phone-icon {
+  font-size: 44px;
+  z-index: 2;
+  position: relative;
+  animation: mmBounce 1.4s ease-in-out infinite;
+}
+
+@keyframes mmBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.mm-pulse-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid var(--gold-3);
+  opacity: 0;
+  animation: mmPulse 1.8s ease-out infinite;
+}
+
+@keyframes mmPulse {
+  0%   { transform: scale(.7); opacity: .8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.mm-waiting-text strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold-1);
+  display: block;
+  margin-bottom: 4px;
+}
+.mm-waiting-text p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.mm-amount-chip, .mm-phone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold-pale);
+  border: 1.5px solid rgba(200,146,42,.25);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-2);
+}
+.mm-phone-chip { font-size: 13px; color: #555; background: #f4f4f4; border-color: #ddd; }
+
+.mm-countdown-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mm-countdown-bar {
+  flex: 1;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mm-countdown-fill {
+  height: 100%;
+  background: var(--gold-grad);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.mm-countdown-sec {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-2);
+  white-space: nowrap;
+  min-width: 30px;
+}
+
+.mm-cancel-hint {
+  font-size: 12px;
+  color: #999;
+}
+
+.mm-ussd-hint {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  background: #1a1a2e;
+  color: #FFE066;
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: none;
+}
+
+/* link-btn (also used in auth.css, keep here for index) */
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--gold-3);
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+

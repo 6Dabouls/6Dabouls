@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIDAS INVEST — Administration</title>
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <script src="js/api.js"></script>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- ── Sidebar ── -->
+  <nav class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-coin">MI</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-name">MIDAS</span>
+        <span class="sidebar-role">Administration</span>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="snav-item active" id="snav-dashboard" onclick="showSection('dashboard')">
+        <i class="fa fa-chart-line"></i> Tableau de bord
+      </button>
+      <button class="snav-item" id="snav-users" onclick="showSection('users')">
+        <i class="fa fa-users"></i> Utilisateurs
+      </button>
+      <button class="snav-item" id="snav-transactions" onclick="showSection('transactions')">
+        <i class="fa fa-receipt"></i> Transactions
+      </button>
+      <button class="snav-item" id="snav-codes" onclick="showSection('codes')">
+        <i class="fa fa-ticket"></i> Codes d'invitation
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="index.html" class="snav-item snav-link">
+        <i class="fa fa-arrow-left"></i> Retour à l'app
+      </a>
+      <button class="snav-item snav-danger" onclick="adminLogout()">
+        <i class="fa fa-right-from-bracket"></i> Déconnexion
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main class="admin-main">
+
+    <!-- ══ DASHBOARD ══ -->
+    <section id="section-dashboard" class="admin-section active">
+      <div class="section-head">
+        <h1><i class="fa fa-chart-line"></i> Tableau de bord</h1>
+        <button class="refresh-btn" onclick="refreshDashboard()"><i class="fa fa-rotate"></i> Actualiser</button>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap blue"><i class="fa fa-users"></i></div>
+          <div class="stat-body">
+            <span class="stat-val" id="stat-users">—</span>
+            <span class="stat-lbl">Membres inscrits</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap green"><i class="fa fa-wallet"></i></div>
+          <div class="stat-body">
+            <span class="stat-val" id="stat-balance">—</span>
+            <span class="stat-lbl">Soldes totaux (XAF)</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap gold"><i class="fa fa-plus-circle"></i></div>
+          <div class="stat-body">
+            <span class="stat-val" id="stat-recharged">—</span>
+            <span class="stat-lbl">Total rechargé (XAF)</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap red"><i class="fa fa-circle-down"></i></div>
+          <div class="stat-body">
+            <span class="stat-val" id="stat-withdrawn">—</span>
+            <span class="stat-lbl">Total retiré (XAF)</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple"><i class="fa fa-receipt"></i></div>
+          <div class="stat-body">
+            <span class="stat-val" id="stat-txcount">—</span>
+            <span class="stat-lbl">Transactions totales</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-recent">
+        <h2>Dernières transactions</h2>
+        <div id="dash-tx-list" class="admin-table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ══ UTILISATEURS ══ -->
+    <section id="section-users" class="admin-section">
+      <div class="section-head">
+        <h1><i class="fa fa-users"></i> Utilisateurs</h1>
+        <button class="refresh-btn" onclick="refreshUsers()"><i class="fa fa-rotate"></i> Actualiser</button>
+      </div>
+
+      <div id="users-table-wrap" class="admin-table-wrap"></div>
+
+      <!-- Crédit / Débit manuel -->
+      <div class="admin-card" style="margin-top:24px">
+        <h2 style="margin-bottom:16px"><i class="fa fa-pen-to-square"></i> Ajustement de solde</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email utilisateur</label>
+            <input type="email" id="adj-email" class="admin-input" placeholder="utilisateur@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Montant (XAF)</label>
+            <input type="number" id="adj-amount" class="admin-input" placeholder="5 000" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Note (optionnel)</label>
+            <input type="text" id="adj-note" class="admin-input" placeholder="Bonus parrainage..." />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="admin-btn green" onclick="handleAdminCredit()">
+            <i class="fa fa-plus"></i> Créditer
+          </button>
+          <button class="admin-btn red" onclick="handleAdminDebit()">
+            <i class="fa fa-minus"></i> Débiter
+          </button>
+        </div>
+        <div id="adj-msg" class="adj-msg"></div>
+      </div>
+    </section>
+
+    <!-- ══ TRANSACTIONS ══ -->
+    <section id="section-transactions" class="admin-section">
+      <div class="section-head">
+        <h1><i class="fa fa-receipt"></i> Toutes les transactions</h1>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="tx-type-filter" class="admin-select" onchange="refreshTransactions()">
+            <option value="all">Tous les types</option>
+            <option value="recharge">Recharges</option>
+            <option value="retrait">Retraits</option>
+            <option value="achat">Achats</option>
+          </select>
+          <button class="refresh-btn" onclick="refreshTransactions()"><i class="fa fa-rotate"></i> Actualiser</button>
+        </div>
+      </div>
+      <div id="tx-table-wrap" class="admin-table-wrap"></div>
+    </section>
+
+    <!-- ══ CODES D'INVITATION ══ -->
+    <section id="section-codes" class="admin-section">
+      <div class="section-head">
+        <h1><i class="fa fa-ticket"></i> Codes d'invitation</h1>
+        <button class="admin-btn gold" onclick="handleGenerateCode()">
+          <i class="fa fa-plus"></i> Générer un code
+        </button>
+      </div>
+      <div id="gen-code-result" class="gen-code-result" style="display:none"></div>
+      <div id="codes-table-wrap" class="admin-table-wrap"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="admin-toast" class="admin-toast"></div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

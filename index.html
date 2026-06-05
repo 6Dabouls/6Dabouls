@@ -6,22 +6,9 @@
   <title>MIDAS INVEST</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-  <script src="js/db.js"></script>
+  <script src="js/api.js"></script>
 </head>
 <body>
-<script>
-(function(){
-  var s=localStorage.getItem('midas_session');
-  if(!s){window.location.href='auth.html';return;}
-  try{
-    var sess=JSON.parse(s);
-    var db=JSON.parse(localStorage.getItem('midas_db_v2')||'{}');
-    if(!db.users||!db.users[sess.email]||db.users[sess.email].token!==sess.token){
-      window.location.href='auth.html';
-    }
-  }catch(e){window.location.href='auth.html';}
-})();
-</script>
 <div class="app-wrapper">
 
   <!-- ═══════════════════ HOME PAGE ═══════════════════ -->
@@ -439,6 +426,10 @@
         <span class="menu-row-left"><i class="fa fa-user-plus menu-ico"></i> Inviter des amis</span>
         <i class="fa fa-chevron-right menu-arr"></i>
       </div>
+      <div class="menu-row admin-row" id="menu-admin-link" style="display:none" onclick="window.location.href='admin.html'">
+        <span class="menu-row-left"><i class="fa fa-shield-halved menu-ico" style="color:#C8922A"></i> Administration</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
       <div class="menu-row danger" onclick="logout()">
         <span class="menu-row-left"><i class="fa fa-right-from-bracket menu-ico"></i> Déconnexion</span>
         <i class="fa fa-chevron-right menu-arr"></i>
@@ -478,43 +469,78 @@
     <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-head-icon recharge-ico"><i class="fa fa-plus"></i></div>
-      <h3>Recharger mon compte</h3>
+      <h3 id="recharge-modal-title">Recharger mon compte</h3>
       <button class="modal-close" onclick="closeModal('recharge')"><i class="fa fa-xmark"></i></button>
     </div>
-    <div class="modal-body">
+
+    <!-- Étape 1 : saisie -->
+    <div id="recharge-step-1" class="modal-body">
       <div class="amount-presets">
+        <button class="preset-btn" onclick="setPreset('recharge', 500)">500</button>
+        <button class="preset-btn" onclick="setPreset('recharge', 2000)">2 000</button>
         <button class="preset-btn" onclick="setPreset('recharge', 5000)">5 000</button>
         <button class="preset-btn" onclick="setPreset('recharge', 10000)">10 000</button>
-        <button class="preset-btn" onclick="setPreset('recharge', 25000)">25 000</button>
-        <button class="preset-btn" onclick="setPreset('recharge', 50000)">50 000</button>
       </div>
       <div class="input-group">
-        <label>Montant (XAF) <span class="field-hint">minimum 1 000</span></label>
+        <label>Montant (XAF) <span class="field-hint">minimum 500</span></label>
         <div class="input-with-currency">
-          <input type="number" id="f-recharge-amount" placeholder="10 000" class="field-input" min="1000" />
+          <input type="number" id="f-recharge-amount" placeholder="5 000" class="field-input" min="500" />
           <span class="currency-badge">XAF</span>
         </div>
         <span class="field-error" id="err-recharge-amount"></span>
       </div>
       <div class="input-group">
         <label>Méthode de paiement</label>
-        <select id="f-recharge-method" class="field-input">
-          <option value="mtn">MTN Mobile Money</option>
-          <option value="orange">Orange Money</option>
-          <option value="bank">Virement bancaire</option>
+        <select id="f-recharge-method" class="field-input" onchange="updatePaymentInstructions()">
+          <option value="mtn">📱 MTN Mobile Money</option>
+          <option value="orange">🟠 Orange Money</option>
+          <option value="bank">🏦 Virement bancaire</option>
         </select>
       </div>
       <div class="input-group">
-        <label>Numéro de téléphone</label>
+        <label>Numéro de téléphone Mobile Money</label>
         <div class="input-with-flag">
           <span class="dial-code">🇨🇲 +237</span>
           <input type="tel" id="f-recharge-phone" placeholder="6XX XXX XXX" class="field-input phone-field" maxlength="9" />
         </div>
         <span class="field-error" id="err-recharge-phone"></span>
       </div>
+      <div id="payment-instructions" class="payment-instructions">
+        <i class="fa fa-circle-info"></i>
+        <span id="payment-instructions-text">Une demande de paiement sera envoyée sur votre téléphone MTN. Approuvez-la avec votre code PIN.</span>
+      </div>
       <button class="submit-btn" id="btn-recharge" onclick="handleRecharge()">
-        <i class="fa fa-bolt"></i> Confirmer la recharge
+        <i class="fa fa-bolt"></i> Envoyer la demande de paiement
       </button>
+    </div>
+
+    <!-- Étape 2 : attente approbation mobile money -->
+    <div id="recharge-step-2" class="modal-body mm-waiting-body" style="display:none">
+      <div class="mm-phone-anim">
+        <div class="mm-phone-icon" id="mm-provider-icon">📱</div>
+        <div class="mm-pulse-ring"></div>
+      </div>
+      <div class="mm-waiting-text">
+        <strong id="mm-waiting-title">Demande envoyée !</strong>
+        <p id="mm-waiting-desc">Approuvez la transaction sur votre téléphone MTN avec votre code PIN.</p>
+      </div>
+      <div class="mm-amount-chip">
+        <i class="fa fa-wallet"></i>
+        <span id="mm-display-amount">—</span>
+      </div>
+      <div class="mm-phone-chip">
+        <i class="fa fa-mobile-screen"></i>
+        <span id="mm-display-phone">—</span>
+      </div>
+      <div class="mm-countdown-wrap">
+        <div class="mm-countdown-bar">
+          <div class="mm-countdown-fill" id="mm-countdown-fill"></div>
+        </div>
+        <span class="mm-countdown-sec"><span id="mm-countdown">30</span>s</span>
+      </div>
+      <p class="mm-cancel-hint">
+        Pas reçu ? <button class="link-btn" onclick="resetRechargeStep()">Réessayer</button>
+      </p>
     </div>
   </div>
 </div>
@@ -534,7 +560,7 @@
         <strong id="ui-retrait-balance">0 XAF</strong>
       </div>
       <div class="input-group">
-        <label>Montant à retirer (XAF) <span class="field-hint">minimum 1 000</span></label>
+        <label>Montant à retirer (XAF) <span class="field-hint">minimum 500</span></label>
         <div class="input-with-currency">
           <input type="number" id="f-retrait-amount" placeholder="5 000" class="field-input" min="1000" />
           <span class="currency-badge">XAF</span>

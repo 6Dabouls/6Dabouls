@@ -240,8 +240,8 @@
 
     recharge(email, amount, method, phone) {
       const amt = parseFloat(amount);
-      if (!amt || amt < 1000)
-        return { error: 'Montant minimum : 1 000 XAF.' };
+      if (!amt || amt < 500)
+        return { error: 'Montant minimum : 500 XAF.' };
 
       const db = this.load();
       if (!db.users[email]) return { error: 'Utilisateur introuvable.' };
@@ -272,8 +272,8 @@
 
     retrait(email, amount, method, phone) {
       const amt = parseFloat(amount);
-      if (!amt || amt < 1000)
-        return { error: 'Montant minimum : 1 000 XAF.' };
+      if (!amt || amt < 500)
+        return { error: 'Montant minimum : 500 XAF.' };
 
       const db = this.load();
       if (!db.users[email]) return { error: 'Utilisateur introuvable.' };
@@ -441,6 +441,115 @@
       } catch (_) {
         return { size: 0, totalRecharge: 0, newThisMonth: 0, firstRecharge: 0 };
       }
+    }
+
+    /* ── Admin ── */
+
+    isAdmin(email) {
+      return email === 'sergedaboulejunior@gmail.com';
+    }
+
+    getStats() {
+      try {
+        const db = this.load();
+        const users = Object.values(db.users);
+        let totalBalance = 0, totalRecharged = 0, totalWithdrawn = 0, txCount = 0;
+        users.forEach(u => {
+          totalBalance   += u.balance        || 0;
+          totalRecharged += u.totalRecharged || 0;
+        });
+        Object.values(db.transactions).forEach(txs => {
+          txs.forEach(tx => {
+            txCount++;
+            if (tx.type === 'retrait') totalWithdrawn += tx.amount;
+          });
+        });
+        return { userCount: users.length, totalBalance, totalRecharged, totalWithdrawn, txCount };
+      } catch (_) {
+        return { userCount: 0, totalBalance: 0, totalRecharged: 0, totalWithdrawn: 0, txCount: 0 };
+      }
+    }
+
+    getAllUsers() {
+      try {
+        const db = this.load();
+        return Object.values(db.users).map(u => ({
+          email:          u.email,
+          name:           u.name,
+          phone:          u.phone || '',
+          balance:        u.balance        || 0,
+          totalRecharged: u.totalRecharged || 0,
+          inviteCode:     u.inviteCode,
+          invitedBy:      u.invitedBy,
+          referrals:      (u.referrals || []).length,
+          createdAt:      u.createdAt
+        }));
+      } catch (_) { return []; }
+    }
+
+    getAllTransactions() {
+      try {
+        const db  = this.load();
+        const all = [];
+        Object.entries(db.transactions).forEach(([email, txs]) => {
+          txs.forEach(tx => all.push({ ...tx, userEmail: email }));
+        });
+        return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+      } catch (_) { return []; }
+    }
+
+    adminCredit(adminEmail, targetEmail, amount, note) {
+      if (!this.isAdmin(adminEmail)) return { error: 'Non autorisé.' };
+      const amt = parseFloat(amount);
+      if (!amt || amt <= 0) return { error: 'Montant invalide.' };
+      const db = this.load();
+      if (!db.users[targetEmail]) return { error: 'Utilisateur introuvable.' };
+      const now = new Date().toISOString();
+      db.users[targetEmail].balance        += amt;
+      db.users[targetEmail].totalRecharged += amt;
+      db.users[targetEmail].updatedAt       = now;
+      if (!Array.isArray(db.transactions[targetEmail])) db.transactions[targetEmail] = [];
+      db.transactions[targetEmail].unshift({
+        id: Date.now(), type: 'recharge', amount: amt, method: 'admin',
+        phone: '', label: 'Crédit admin' + (note ? ' — ' + note : ''), date: now, status: 'success'
+      });
+      this.save(db);
+      return { success: true };
+    }
+
+    adminDebit(adminEmail, targetEmail, amount, note) {
+      if (!this.isAdmin(adminEmail)) return { error: 'Non autorisé.' };
+      const amt = parseFloat(amount);
+      if (!amt || amt <= 0) return { error: 'Montant invalide.' };
+      const db = this.load();
+      if (!db.users[targetEmail]) return { error: 'Utilisateur introuvable.' };
+      if ((db.users[targetEmail].balance || 0) < amt) return { error: 'Solde insuffisant.' };
+      const now = new Date().toISOString();
+      db.users[targetEmail].balance  -= amt;
+      db.users[targetEmail].updatedAt = now;
+      if (!Array.isArray(db.transactions[targetEmail])) db.transactions[targetEmail] = [];
+      db.transactions[targetEmail].unshift({
+        id: Date.now(), type: 'retrait', amount: amt, method: 'admin',
+        phone: '', label: 'Débit admin' + (note ? ' — ' + note : ''), date: now, status: 'success'
+      });
+      this.save(db);
+      return { success: true };
+    }
+
+    getInviteCodes() {
+      try {
+        const db = this.load();
+        return Object.entries(db.inviteCodes).map(([code, email]) => ({ code, usedBy: email }));
+      } catch (_) { return []; }
+    }
+
+    generateInviteCode(adminEmail) {
+      if (!this.isAdmin(adminEmail)) return { error: 'Non autorisé.' };
+      const db   = this.load();
+      const code = this._uniqueInviteCode(db);
+      db.inviteCodes[code] = null;
+      this.save(db);
+      return { success: true, code };
     }
   }
 
