@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MIDAS INVEST — Connexion</title>
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <script src="js/api.js"></script>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- ── Colonne illustration (desktop) ── -->
+  <div class="auth-illustration" aria-hidden="true">
+    <img src="assets/invest-illus.svg" alt="Illustration investissement" class="illus-img" />
+    <div class="illus-overlay">
+      <div class="illus-brand">
+        <div class="illus-coin">MI</div>
+        <span class="illus-name">MIDAS INVEST</span>
+      </div>
+      <h2 class="illus-headline">
+        Rejoignez l'élite<br>
+        <span>des investisseurs africains</span>
+      </h2>
+      <div class="illus-stats">
+        <div class="stat-chip">
+          <span class="stat-num">500+</span>
+          <span class="stat-lbl">membres</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-num">98%</span>
+          <span class="stat-lbl">satisfaction</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-num">10M+</span>
+          <span class="stat-lbl">XAF distribués</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Colonne formulaire ── -->
+  <div class="auth-form-col">
+    <div class="auth-card">
+
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-logo-coin">MI</div>
+        <div class="auth-brand-text">
+          <span class="auth-brand-name">MIDAS INVEST</span>
+          <span class="auth-tagline">Transformez chaque franc en or</span>
+        </div>
+      </div>
+
+      <!-- Onglets -->
+      <div class="form-tabs">
+        <button class="form-tab active" id="tab-login" onclick="showTab('login')">
+          <i class="fa fa-right-to-bracket"></i> Connexion
+        </button>
+        <button class="form-tab" id="tab-register" onclick="showTab('register')">
+          <i class="fa fa-user-plus"></i> Inscription
+        </button>
+      </div>
+
+      <!-- Erreur globale -->
+      <div id="global-error" class="global-error" style="display:none"></div>
+
+      <!-- ═══ Section LOGIN ═══ -->
+      <div id="section-login" class="form-section active">
+        <div class="input-group">
+          <label for="f-login-email">Email</label>
+          <input type="email" id="f-login-email" placeholder="votre@email.com"
+                 class="field-input" autocomplete="email" />
+          <span class="field-error" id="err-login-email"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-login-password">Mot de passe</label>
+          <div class="input-with-eye">
+            <input type="password" id="f-login-password" placeholder="••••••••"
+                   class="field-input" autocomplete="current-password" />
+            <button class="eye-toggle" type="button"
+                    onclick="toggleEye('f-login-password', this)"
+                    aria-label="Afficher le mot de passe">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="field-error" id="err-login-pwd"></span>
+        </div>
+
+        <button class="submit-btn" id="btn-login" onclick="handleLogin()">
+          <i class="fa fa-bolt"></i> Se connecter
+        </button>
+
+        <p class="auth-switch-link">
+          Pas encore membre ?
+          <button type="button" class="link-btn" onclick="showTab('register')">S'inscrire</button>
+        </p>
+      </div>
+
+      <!-- ═══ Section REGISTER ═══ -->
+      <div id="section-register" class="form-section">
+        <div class="input-group">
+          <label for="f-reg-name">Prénom et nom</label>
+          <input type="text" id="f-reg-name" placeholder="Jean Dupont"
+                 class="field-input" autocomplete="name" />
+          <span class="field-error" id="err-reg-name"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-reg-email">Email</label>
+          <input type="email" id="f-reg-email" placeholder="votre@email.com"
+                 class="field-input" autocomplete="email" />
+          <span class="field-error" id="err-reg-email"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-reg-phone">Téléphone</label>
+          <div class="input-with-flag">
+            <span class="dial-code">🇨🇲 +237</span>
+            <input type="tel" id="f-reg-phone" placeholder="6XX XXX XXX"
+                   class="field-input phone-field" maxlength="9" autocomplete="tel" />
+          </div>
+          <span class="field-error" id="err-reg-phone"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-reg-password">Mot de passe</label>
+          <div class="input-with-eye">
+            <input type="password" id="f-reg-password" placeholder="Minimum 6 caractères"
+                   class="field-input" autocomplete="new-password" />
+            <button class="eye-toggle" type="button"
+                    onclick="toggleEye('f-reg-password', this)"
+                    aria-label="Afficher">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="field-error" id="err-reg-pwd"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-reg-confirm">Confirmer le mot de passe</label>
+          <div class="input-with-eye">
+            <input type="password" id="f-reg-confirm" placeholder="Répétez votre mot de passe"
+                   class="field-input" autocomplete="new-password" />
+            <button class="eye-toggle" type="button"
+                    onclick="toggleEye('f-reg-confirm', this)"
+                    aria-label="Afficher">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+          <span class="field-error" id="err-reg-confirm"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="f-reg-code">
+            Code d'invitation <span class="field-required">*</span>
+          </label>
+          <input type="text" id="f-reg-code" placeholder="MIDAS-XXXXXX"
+                 class="field-input" autocomplete="off" spellcheck="false" />
+          <span class="field-error" id="err-reg-code"></span>
+          <span class="demo-codes-note">
+            <i class="fa fa-circle-info"></i>
+            Codes de démo :
+            <strong>MIDAS-ADMIN</strong> · <strong>INVEST-2024</strong> · <strong>OR-GOLD-01</strong>
+          </span>
+        </div>
+
+        <button class="submit-btn" id="btn-register" onclick="handleRegister()">
+          <i class="fa fa-crown"></i> Créer mon compte
+        </button>
+
+        <p class="auth-switch-link">
+          Déjà membre ?
+          <button type="button" class="link-btn" onclick="showTab('login')">Se connecter</button>
+        </p>
+      </div>
+
+    </div><!-- /auth-card -->
+  </div><!-- /auth-form-col -->
+
+</div><!-- /auth-wrapper -->
+
+<script src="js/auth.js"></script>
+
+</body>
+</html>

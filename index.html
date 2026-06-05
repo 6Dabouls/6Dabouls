@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MIDAS INVEST</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <script src="js/api.js"></script>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- ═══════════════════ HOME PAGE ═══════════════════ -->
+  <div id="page-home" class="page active">
+    <header class="app-header">
+      <button class="header-icon-btn"><i class="fa fa-bell"></i></button>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">MI</div>
+        <span class="header-brand">MIDAS INVEST</span>
+      </div>
+      <button class="lang-btn" onclick="toggleLang()">
+        <span id="flag-icon">🇫🇷</span> <span id="lang-label">Français</span>
+        <i class="fa fa-chevron-down fa-xs"></i>
+      </button>
+    </header>
+
+    <div class="investment-ticker">
+      <span class="ticker-icon">👑</span>
+      <span class="ticker-text">MIDAS INVEST — Transformez chaque franc en or. Rejoignez l'élite des investisseurs africains.</span>
+    </div>
+
+    <!-- Quick balance summary on home -->
+    <div class="home-balance-bar">
+      <div class="home-bal-item">
+        <span class="home-bal-label">Solde disponible</span>
+        <span class="home-bal-val" id="home-balance">0 XAF</span>
+      </div>
+      <div class="home-bal-sep"></div>
+      <div class="home-bal-item">
+        <span class="home-bal-label">Total rechargé</span>
+        <span class="home-bal-val" id="home-recharged">0 XAF</span>
+      </div>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-item" onclick="openModal('recharge')">
+        <div class="action-icon-wrap recharge"><i class="fa fa-plus"></i></div>
+        <span>Recharger</span>
+      </div>
+      <div class="action-item" onclick="showPage('project'); switchProjectTab('plans')">
+        <div class="action-icon-wrap app"><i class="fa fa-gem"></i></div>
+        <span>Investir</span>
+      </div>
+      <div class="action-item" onclick="openModal('retrait')">
+        <div class="action-icon-wrap retrait"><i class="fa fa-arrow-down"></i></div>
+        <span>Retirer</span>
+      </div>
+      <div class="action-item" onclick="openModal('transactions')">
+        <div class="action-icon-wrap profil"><i class="fa fa-receipt"></i></div>
+        <span>Historique</span>
+      </div>
+    </div>
+
+    <div class="mine-hero">
+      <img src="assets/mine-hero.svg" alt="Mine d'or" class="mine-hero-img" />
+      <div class="mine-hero-content">
+        <span class="mine-hero-label">MIDAS INVEST</span>
+        <span class="mine-hero-sub">L'or, votre avenir — Investissez maintenant</span>
+      </div>
+      <div class="mine-hero-overlay"></div>
+    </div>
+
+    <div class="section-title">Salle de projets</div>
+
+    <div class="project-list">
+      <div class="project-card" onclick="showPage('project'); switchProjectTab('plans')">
+        <div class="project-thumb mine-thumb-1">
+          <span class="thumb-badge">PO No.1</span>
+        </div>
+        <div class="project-body">
+          <div class="project-benefit">
+            <span class="benefit-label">Bénéfice quotidien</span>
+            <span class="benefit-amount">1 100 <small>XAF</small></span>
+          </div>
+          <div class="project-price-row">
+            <span class="project-price-label">Prix</span>
+            <span class="project-price">10 000 XAF</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" onclick="showPage('project'); switchProjectTab('plans')">
+        <div class="project-thumb mine-thumb-2">
+          <span class="thumb-badge">PO No.2</span>
+        </div>
+        <div class="project-body">
+          <div class="project-benefit">
+            <span class="benefit-label">Bénéfice quotidien</span>
+            <span class="benefit-amount">4 000 <small>XAF</small></span>
+          </div>
+          <div class="project-price-row">
+            <span class="project-price-label">Prix</span>
+            <span class="project-price">32 000 XAF</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card" onclick="showPage('project'); switchProjectTab('plans')">
+        <div class="project-thumb mine-thumb-3">
+          <span class="thumb-badge">PO No.3</span>
+        </div>
+        <div class="project-body">
+          <div class="project-benefit">
+            <span class="benefit-label">Bénéfice quotidien</span>
+            <span class="benefit-amount">13 996 <small>XAF</small></span>
+          </div>
+          <div class="project-price-row">
+            <span class="project-price-label">Prix</span>
+            <span class="project-price">100 000 XAF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PROJECT PAGE ═══════════════════ -->
+  <div id="page-project" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">MI</div>
+        <span class="header-brand">MIDAS INVEST</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <div class="page-tab-bar">
+      <button class="tab-btn active" id="tab-achat" onclick="switchProjectTab('achat')">Mes achats</button>
+      <button class="tab-btn" id="tab-plans" onclick="switchProjectTab('plans')">Plans d'or</button>
+    </div>
+
+    <!-- Purchase history panel -->
+    <div id="panel-achat" class="tab-panel active">
+      <div id="portfolio-list"></div>
+      <div id="portfolio-empty" class="empty-state" style="display:none">
+        <i class="fa fa-box-open"></i>
+        <p>Aucun investissement actif</p>
+        <button class="cta-btn" onclick="switchProjectTab('plans')">Découvrir les plans</button>
+      </div>
+    </div>
+
+    <!-- Plans panel -->
+    <div id="panel-plans" class="tab-panel po-list">
+
+      <div class="po-card">
+        <div class="po-hero mine-thumb-1">
+          <span class="po-hero-badge">PO No.1 — Starter</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">1 100 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Retour total estimé</span>
+            <span class="po-stat-val gold-text">401 500 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">1</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">10 000 XAF</span>
+            <button class="buy-btn" onclick="openBuyModal('PO No.1', 10000, 1100)">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="po-card">
+        <div class="po-hero mine-thumb-2">
+          <span class="po-hero-badge">PO No.2 — Premium</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">4 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Retour total estimé</span>
+            <span class="po-stat-val gold-text">1 460 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">32 000 ~ 9M XAF</span>
+            <button class="buy-btn" onclick="openBuyModal('PO No.2', 32000, 4000)">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="po-card">
+        <div class="po-hero mine-thumb-3">
+          <span class="po-hero-badge">PO No.3 — Elite</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">13 996 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Retour total estimé</span>
+            <span class="po-stat-val gold-text">5 108 540 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">100 000+ XAF</span>
+            <button class="buy-btn" onclick="openBuyModal('PO No.3', 100000, 13996)">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="po-card">
+        <div class="po-hero mine-thumb-4">
+          <span class="po-hero-badge">PO No.4 — VIP</span>
+        </div>
+        <div class="po-body">
+          <div class="po-stat-row">
+            <span class="po-stat-label">Bénéfice quotidien</span>
+            <span class="po-stat-val gold-text">55 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Cycle d'investissement</span>
+            <span class="po-stat-val">365 Jours</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Retour total estimé</span>
+            <span class="po-stat-val gold-text">20 075 000 XAF</span>
+          </div>
+          <div class="po-stat-row">
+            <span class="po-stat-label">Investissements / jour</span>
+            <span class="po-stat-val">Illimité</span>
+          </div>
+          <div class="po-footer">
+            <span class="po-footer-price">500 000+ XAF</span>
+            <button class="buy-btn" onclick="openBuyModal('PO No.4', 500000, 55000)">Acheter maintenant</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TEAM PAGE ═══════════════════ -->
+  <div id="page-team" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">MI</div>
+        <span class="header-brand">MIDAS INVEST</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <button class="period-bar">
+      Période de sélection <i class="fa fa-chevron-down fa-xs"></i>
+    </button>
+
+    <div class="team-stats-grid">
+      <div class="team-stat-box">
+        <span class="team-stat-label">Taille de l'équipe</span>
+        <span class="team-stat-val" id="team-size">0</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Recharge d'équipe</span>
+        <span class="team-stat-val" id="team-recharge">0 XAF</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Nouvelle équipe</span>
+        <span class="team-stat-val" id="team-new">0</span>
+      </div>
+      <div class="team-stat-box">
+        <span class="team-stat-label">Première recharge</span>
+        <span class="team-stat-val" id="team-first-rec">0</span>
+      </div>
+      <div class="team-stat-box team-stat-full">
+        <span class="team-stat-label">Premier retrait</span>
+        <span class="team-stat-val">0</span>
+      </div>
+    </div>
+
+    <div class="levels-scroll">
+      <div class="level-card lvl-1">
+        <div class="lvl-header">
+          <div class="lvl-stars">★</div>
+          <div class="lvl-title">NIVEAU 1</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Commission</span><span class="lvl-val highlight">10%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise tâches</span><span class="lvl-val highlight">10%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+
+      <div class="level-card lvl-2">
+        <div class="lvl-header">
+          <div class="lvl-stars">★★</div>
+          <div class="lvl-title">NIVEAU 2</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Commission</span><span class="lvl-val highlight">3%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise tâches</span><span class="lvl-val highlight">3%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+
+      <div class="level-card lvl-3">
+        <div class="lvl-header">
+          <div class="lvl-stars">★★★</div>
+          <div class="lvl-title">NIVEAU 3</div>
+        </div>
+        <div class="lvl-row"><span class="lvl-label">Registre/Valide</span><span class="lvl-val">0/0</span></div>
+        <div class="lvl-row"><span class="lvl-label">Commission</span><span class="lvl-val highlight">1%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Remise tâches</span><span class="lvl-val highlight">1%</span></div>
+        <div class="lvl-row"><span class="lvl-label">Revenu total</span><span class="lvl-val">0</span></div>
+        <button class="lvl-btn">Détails</button>
+      </div>
+    </div>
+
+    <div class="invite-box">
+      <div class="invite-title"><i class="fa fa-user-plus"></i> Inviter des amis</div>
+      <p class="invite-desc">Partagez votre lien de parrainage et gagnez des commissions sur les investissements de votre équipe.</p>
+      <button class="cta-btn" onclick="openModal('invite')">Copier le lien d'invitation</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PROFILE PAGE ═══════════════════ -->
+  <div id="page-profile" class="page">
+    <header class="app-header">
+      <div style="width:40px"></div>
+      <div class="header-brand-wrap">
+        <div class="logo-coin">MI</div>
+        <span class="header-brand">MIDAS INVEST</span>
+      </div>
+      <button class="lang-btn"><span>🇫🇷</span> Français <i class="fa fa-chevron-down fa-xs"></i></button>
+    </header>
+
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar"><span>MI</span></div>
+        <div class="avatar-badge"><i class="fa fa-star"></i></div>
+      </div>
+      <div class="profile-name-text" id="profile-name-display"></div>
+      <div class="profile-email" id="profile-email-display"></div>
+      <div class="profile-rank">Investisseur Starter</div>
+      <div class="invite-code-chip">
+        <i class="fa fa-ticket" style="color:rgba(255,255,255,.7)"></i>
+        <span class="invite-code-val" id="my-invite-code">—</span>
+        <button class="copy-code-btn" onclick="copyMyCode()" title="Copier mon code">
+          <i class="fa fa-copy"></i>
+        </button>
+      </div>
+
+      <div class="balance-cards">
+        <div class="balance-card">
+          <span class="balance-label">Solde total (XAF)</span>
+          <span class="balance-val" id="ui-balance">0</span>
+        </div>
+        <div class="balance-card">
+          <span class="balance-label">Total rechargé (XAF)</span>
+          <span class="balance-val" id="ui-recharged">0</span>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <div class="profile-action" onclick="openModal('recharge')">
+          <div class="profile-action-icon recharge"><i class="fa fa-plus"></i></div>
+          <span>Recharger</span>
+        </div>
+        <div class="profile-action" onclick="openModal('retrait')">
+          <div class="profile-action-icon retrait"><i class="fa fa-arrow-down"></i></div>
+          <span>Retirer</span>
+        </div>
+        <div class="profile-action" onclick="openModal('transfer')">
+          <div class="profile-action-icon transfer"><i class="fa fa-right-left"></i></div>
+          <span>Transfert</span>
+        </div>
+        <div class="profile-action" onclick="openModal('transactions')">
+          <div class="profile-action-icon history"><i class="fa fa-receipt"></i></div>
+          <span>Historique</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-menu">
+      <div class="menu-row" onclick="openModal('transfer')">
+        <span class="menu-row-left"><i class="fa fa-right-left menu-ico"></i> Transfert</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row" onclick="openModal('transactions')">
+        <span class="menu-row-left"><i class="fa fa-receipt menu-ico"></i> Dossiers financiers</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row" onclick="openModal('password')">
+        <span class="menu-row-left"><i class="fa fa-lock menu-ico"></i> Changer le mot de passe</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row" onclick="openModal('invite')">
+        <span class="menu-row-left"><i class="fa fa-user-plus menu-ico"></i> Inviter des amis</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row admin-row" id="menu-admin-link" style="display:none" onclick="window.location.href='admin.html'">
+        <span class="menu-row-left"><i class="fa fa-shield-halved menu-ico" style="color:#C8922A"></i> Administration</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+      <div class="menu-row danger" onclick="logout()">
+        <span class="menu-row-left"><i class="fa fa-right-from-bracket menu-ico"></i> Déconnexion</span>
+        <i class="fa fa-chevron-right menu-arr"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ BOTTOM NAV ═══════════════════ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="showPage('home')">
+      <i class="fa fa-house"></i>
+      <span>Maison</span>
+    </button>
+    <button class="nav-item" id="nav-project" onclick="showPage('project')">
+      <i class="fa fa-gem"></i>
+      <span>Projet</span>
+    </button>
+    <button class="nav-item" id="nav-team" onclick="showPage('team')">
+      <i class="fa fa-users"></i>
+      <span>Équipe</span>
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="showPage('profile')">
+      <i class="fa fa-user"></i>
+      <span>Moi</span>
+    </button>
+  </nav>
+
+</div><!-- /app-wrapper -->
+
+<!-- ═══════════════════════════════
+     MODALS
+═══════════════════════════════ -->
+
+<!-- ── Recharge ── -->
+<div id="modal-recharge" class="modal-bg" onclick="closeModal('recharge')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon recharge-ico"><i class="fa fa-plus"></i></div>
+      <h3 id="recharge-modal-title">Recharger mon compte</h3>
+      <button class="modal-close" onclick="closeModal('recharge')"><i class="fa fa-xmark"></i></button>
+    </div>
+
+    <!-- Étape 1 : saisie -->
+    <div id="recharge-step-1" class="modal-body">
+      <div class="amount-presets">
+        <button class="preset-btn" onclick="setPreset('recharge', 500)">500</button>
+        <button class="preset-btn" onclick="setPreset('recharge', 2000)">2 000</button>
+        <button class="preset-btn" onclick="setPreset('recharge', 5000)">5 000</button>
+        <button class="preset-btn" onclick="setPreset('recharge', 10000)">10 000</button>
+      </div>
+      <div class="input-group">
+        <label>Montant (XAF) <span class="field-hint">minimum 500</span></label>
+        <div class="input-with-currency">
+          <input type="number" id="f-recharge-amount" placeholder="5 000" class="field-input" min="500" />
+          <span class="currency-badge">XAF</span>
+        </div>
+        <span class="field-error" id="err-recharge-amount"></span>
+      </div>
+      <div class="input-group">
+        <label>Méthode de paiement</label>
+        <select id="f-recharge-method" class="field-input" onchange="updatePaymentInstructions()">
+          <option value="mtn">📱 MTN Mobile Money</option>
+          <option value="orange">🟠 Orange Money</option>
+          <option value="bank">🏦 Virement bancaire</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Numéro de téléphone Mobile Money</label>
+        <div class="input-with-flag">
+          <span class="dial-code">🇨🇲 +237</span>
+          <input type="tel" id="f-recharge-phone" placeholder="6XX XXX XXX" class="field-input phone-field" maxlength="9" />
+        </div>
+        <span class="field-error" id="err-recharge-phone"></span>
+      </div>
+      <div id="payment-instructions" class="payment-instructions">
+        <i class="fa fa-circle-info"></i>
+        <span id="payment-instructions-text">Une demande de paiement sera envoyée sur votre téléphone MTN. Approuvez-la avec votre code PIN.</span>
+      </div>
+      <button class="submit-btn" id="btn-recharge" onclick="handleRecharge()">
+        <i class="fa fa-bolt"></i> Envoyer la demande de paiement
+      </button>
+    </div>
+
+    <!-- Étape 2 : attente approbation mobile money -->
+    <div id="recharge-step-2" class="modal-body mm-waiting-body" style="display:none">
+      <div class="mm-phone-anim">
+        <div class="mm-phone-icon" id="mm-provider-icon">📱</div>
+        <div class="mm-pulse-ring"></div>
+      </div>
+      <div class="mm-waiting-text">
+        <strong id="mm-waiting-title">Demande envoyée !</strong>
+        <p id="mm-waiting-desc">Approuvez la transaction sur votre téléphone MTN avec votre code PIN.</p>
+      </div>
+      <div class="mm-amount-chip">
+        <i class="fa fa-wallet"></i>
+        <span id="mm-display-amount">—</span>
+      </div>
+      <div class="mm-phone-chip">
+        <i class="fa fa-mobile-screen"></i>
+        <span id="mm-display-phone">—</span>
+      </div>
+      <div class="mm-countdown-wrap">
+        <div class="mm-countdown-bar">
+          <div class="mm-countdown-fill" id="mm-countdown-fill"></div>
+        </div>
+        <span class="mm-countdown-sec"><span id="mm-countdown">30</span>s</span>
+      </div>
+      <p class="mm-cancel-hint">
+        Pas reçu ? <button class="link-btn" onclick="resetRechargeStep()">Réessayer</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Retrait ── -->
+<div id="modal-retrait" class="modal-bg" onclick="closeModal('retrait')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon retrait-ico"><i class="fa fa-arrow-down"></i></div>
+      <h3>Retirer des fonds</h3>
+      <button class="modal-close" onclick="closeModal('retrait')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="balance-info-box">
+        <span><i class="fa fa-wallet"></i> Solde disponible</span>
+        <strong id="ui-retrait-balance">0 XAF</strong>
+      </div>
+      <div class="input-group">
+        <label>Montant à retirer (XAF) <span class="field-hint">minimum 500</span></label>
+        <div class="input-with-currency">
+          <input type="number" id="f-retrait-amount" placeholder="5 000" class="field-input" min="1000" />
+          <span class="currency-badge">XAF</span>
+        </div>
+        <span class="field-error" id="err-retrait-amount"></span>
+      </div>
+      <div class="input-group">
+        <label>Méthode de retrait</label>
+        <select id="f-retrait-method" class="field-input">
+          <option value="mtn">MTN Mobile Money</option>
+          <option value="orange">Orange Money</option>
+          <option value="bank">Virement bancaire</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Numéro de téléphone</label>
+        <div class="input-with-flag">
+          <span class="dial-code">🇨🇲 +237</span>
+          <input type="tel" id="f-retrait-phone" placeholder="6XX XXX XXX" class="field-input phone-field" maxlength="9" />
+        </div>
+        <span class="field-error" id="err-retrait-phone"></span>
+      </div>
+      <button class="submit-btn" id="btn-retrait" onclick="handleRetrait()">
+        <i class="fa fa-circle-down"></i> Confirmer le retrait
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Buy ── -->
+<div id="modal-buy" class="modal-bg" onclick="closeModal('buy')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon buy-ico"><i class="fa fa-gem"></i></div>
+      <h3 id="buy-modal-title">Acheter un plan</h3>
+      <button class="modal-close" onclick="closeModal('buy')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="buy-summary-card">
+        <div class="buy-summary-row">
+          <span>Prix unitaire</span>
+          <strong id="buy-modal-price">—</strong>
+        </div>
+        <div class="buy-summary-row">
+          <span>Bénéfice / jour</span>
+          <strong id="buy-modal-profit" class="gold-text">—</strong>
+        </div>
+        <div class="buy-summary-row">
+          <span>Votre solde</span>
+          <strong id="buy-modal-balance">0 XAF</strong>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Quantité</label>
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input type="number" id="f-buy-qty" value="1" min="1" max="100" class="field-input qty-input" oninput="updateBuyTotal()" />
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+      <div class="buy-total-row">
+        <span>Total à payer</span>
+        <span class="buy-total" id="buy-total-display">—</span>
+      </div>
+      <span class="field-error" id="err-buy"></span>
+      <button class="submit-btn" id="btn-buy" onclick="handleBuy()">
+        <i class="fa fa-crown"></i> Confirmer l'achat
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Transactions ── -->
+<div id="modal-transactions" class="modal-bg" onclick="closeModal('transactions')">
+  <div class="modal-sheet tall-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon tx-ico"><i class="fa fa-receipt"></i></div>
+      <h3>Dossiers financiers</h3>
+      <button class="modal-close" onclick="closeModal('transactions')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="tx-filter-bar">
+      <button class="tx-filter active" data-filter="all" onclick="filterTx('all', this)">Tout</button>
+      <button class="tx-filter" data-filter="recharge" onclick="filterTx('recharge', this)">Recharges</button>
+      <button class="tx-filter" data-filter="retrait" onclick="filterTx('retrait', this)">Retraits</button>
+      <button class="tx-filter" data-filter="achat" onclick="filterTx('achat', this)">Achats</button>
+    </div>
+    <div id="transactions-list" class="transactions-list">
+      <div class="tx-empty"><i class="fa fa-inbox"></i><p>Aucune transaction</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Transfer ── -->
+<div id="modal-transfer" class="modal-bg" onclick="closeModal('transfer')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon transfer-ico"><i class="fa fa-right-left"></i></div>
+      <h3>Transfert</h3>
+      <button class="modal-close" onclick="closeModal('transfer')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="balance-info-box">
+        <span><i class="fa fa-wallet"></i> Solde disponible</span>
+        <strong id="ui-transfer-balance">0 XAF</strong>
+      </div>
+      <div class="input-group">
+        <label>Email du destinataire</label>
+        <input type="email" id="f-transfer-email" placeholder="exemple@email.com" class="field-input" />
+        <span class="field-error" id="err-transfer-email"></span>
+      </div>
+      <div class="input-group">
+        <label>Montant (XAF)</label>
+        <div class="input-with-currency">
+          <input type="number" id="f-transfer-amount" placeholder="5 000" class="field-input" min="1000" />
+          <span class="currency-badge">XAF</span>
+        </div>
+        <span class="field-error" id="err-transfer-amount"></span>
+      </div>
+      <button class="submit-btn" id="btn-transfer" onclick="handleTransfer()">
+        <i class="fa fa-paper-plane"></i> Envoyer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Password ── -->
+<div id="modal-password" class="modal-bg" onclick="closeModal('password')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon lock-ico"><i class="fa fa-lock"></i></div>
+      <h3>Changer le mot de passe</h3>
+      <button class="modal-close" onclick="closeModal('password')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label>Mot de passe actuel</label>
+        <input type="password" id="f-pwd-current" placeholder="••••••••" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="f-pwd-new" placeholder="••••••••" class="field-input" />
+      </div>
+      <div class="input-group">
+        <label>Confirmer le nouveau</label>
+        <input type="password" id="f-pwd-confirm" placeholder="••••••••" class="field-input" />
+        <span class="field-error" id="err-pwd"></span>
+      </div>
+      <button class="submit-btn" id="btn-pwd" onclick="handlePassword()">
+        <i class="fa fa-shield-halved"></i> Modifier le mot de passe
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Invite ── -->
+<div id="modal-invite" class="modal-bg" onclick="closeModal('invite')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-head-icon invite-ico"><i class="fa fa-user-plus"></i></div>
+      <h3>Inviter des amis</h3>
+      <button class="modal-close" onclick="closeModal('invite')"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="commission-info">
+        <div class="comm-item"><span class="comm-lvl">Niveau 1</span><span class="comm-pct">10%</span></div>
+        <div class="comm-item"><span class="comm-lvl">Niveau 2</span><span class="comm-pct">3%</span></div>
+        <div class="comm-item"><span class="comm-lvl">Niveau 3</span><span class="comm-pct">1%</span></div>
+      </div>
+      <div class="invite-qr">
+        <div class="qr-placeholder"><i class="fa fa-qrcode"></i></div>
+        <p>Scannez pour rejoindre</p>
+      </div>
+      <div class="invite-link-box">
+        <input type="text" id="invite-link-input" value="" class="field-input" readonly placeholder="Chargement…" />
+        <button class="copy-btn" onclick="copyInviteLink()"><i class="fa fa-copy"></i> Copier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Success overlay ── -->
+<div id="success-overlay" class="success-overlay" style="display:none">
+  <div class="success-box">
+    <div class="success-icon-wrap"><i class="fa fa-check"></i></div>
+    <p id="success-msg">Opération réussie !</p>
+    <span id="success-sub"></span>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
